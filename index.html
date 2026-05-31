@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Six Channels — Integral Model</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="favicon.svg">
+<style>
+  :root{
+    --bg:#0a0d13; --panel:#11161f; --panel2:#171d2a; --line:#252d3d; --line2:#313b50;
+    --ink:#edece6; --ink2:#9aa6ba; --ink3:#697384;
+    --yang:#e0ac52; --yang-bd:rgba(224,172,82,.5);
+    --yin:#5f93cf; --yin-bd:rgba(95,147,207,.5);
+    --bridge:#bf8ae6; --qi:#3bbdb2; --engine:#ef6f40;
+    --chan:#4fb0a8; --organ:#e0ac52;
+    --open:#e0ac52; --pivot:#4fb0a8; --close:#8093c9;
+    --wood:#4eb784; --fire:#e0594b; --earth:#d8a64e; --metal:#cdd5de; --water:#4f86c6;
+  }
+  body.light{
+    --bg:#eef1f6; --panel:#ffffff; --panel2:#f1f4f9; --line:#d7dde7; --line2:#c4ccdb;
+    --ink:#1a2130; --ink2:#4d566b; --ink3:#7b8498;
+    --yang:#a9741d; --yang-bd:rgba(169,116,29,.5);
+    --yin:#2f63a0; --yin-bd:rgba(47,99,160,.5);
+    --bridge:#7b46b0; --qi:#1f8f86; --engine:#cf5a23;
+    --chan:#1f8f86; --organ:#a9741d;
+    --open:#a9741d; --pivot:#1f8f86; --close:#4a5aa8;
+    --wood:#2f8f5e; --fire:#c33c2f; --earth:#a9741d; --metal:#5a6573; --water:#2f63a0;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1100px 640px at 50% -8%,#141d2e 0%,var(--bg) 58%);
+    color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    line-height:1.5;-webkit-font-smoothing:antialiased}
+  body.light{background:radial-gradient(1100px 640px at 50% -8%,#ffffff 0%,var(--bg) 60%)}
+  .wrap{max-width:1500px;margin:0 auto;padding:18px 20px 30px}
+  .topbar{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:12px}
+  .brand{font-size:13px;letter-spacing:2.5px;text-transform:uppercase;color:var(--ink2);font-weight:600}
+  .brand b{color:var(--ink);font-weight:700}.brand span{color:var(--ink3);letter-spacing:1.5px}
+  .views{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin-left:auto}
+  .tab{border:1px solid var(--line);background:var(--panel);color:var(--ink2);
+    padding:7px 14px;border-radius:9px;font-size:12.5px;cursor:pointer;transition:.16s;user-select:none;white-space:nowrap}
+  .tab:hover{border-color:var(--line2);color:var(--ink)}
+  .tab.on{background:var(--ink);color:var(--bg);font-weight:600;border-color:var(--ink)}
+  .tbtn{border:1px solid var(--line);background:var(--panel);color:var(--ink2);width:33px;height:33px;
+    border-radius:9px;cursor:pointer;font-size:14px;line-height:1;transition:.16s}
+  .tbtn:hover{color:var(--ink);border-color:var(--line2)}
+  .vhint{color:var(--ink3);font-size:12px;margin:0 0 4px;min-height:16px}
+  .stage{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;align-items:stretch}
+  .svgbox{flex:1 1 700px;min-width:320px;background:linear-gradient(180deg,#121824,#0e131c);
+    border:1px solid var(--line);border-radius:18px;padding:8px 12px}
+  body.light .svgbox{background:linear-gradient(180deg,#ffffff,#f3f6fb)}
+  svg#scheme{width:100%;height:auto;display:block}
+  aside{flex:1 1 340px;min-width:300px;max-width:430px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px 17px}
+  #info .htag{display:inline-block;font-size:10.5px;letter-spacing:.7px;text-transform:uppercase;padding:3px 9px;border-radius:6px;font-weight:600;margin-bottom:10px}
+  #info h2{margin:0 0 2px;font-size:19px}#info .sub{color:var(--ink2);font-size:13px;margin:0 0 12px}
+  #info .row{display:flex;gap:11px;padding:8px 10px;border-radius:9px;font-size:13px;margin-bottom:3px}
+  #info .row .k{color:var(--ink3);flex:0 0 74px;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;padding-top:2px;font-weight:600}
+  #info .row .v{color:var(--ink);flex:1}
+  #info .row.ch{background:rgba(79,176,168,.10)} #info .row.ch .k{color:var(--chan)}
+  #info .row.og{background:rgba(224,172,82,.12)} #info .row.og .k{color:var(--organ)}
+  #info .note{margin-top:12px;padding:10px 13px;background:var(--panel2);border-radius:11px;font-size:12.5px;color:var(--ink2)}
+  .legendbar{display:flex;flex-wrap:wrap;gap:7px 18px;align-items:center;margin-top:14px;font-size:11px;color:var(--ink3)}
+  .legendbar i{display:inline-block;width:16px;border-top-width:3px;border-top-style:solid;margin-right:6px;vertical-align:3px}
+  .legendbar .attrib{color:var(--ink3);opacity:.8}
+  .node{cursor:pointer;transition:transform .6s cubic-bezier(.45,.05,.2,1)}
+  .node:focus{outline:none} .node:focus-visible .nbg{stroke:var(--ink);stroke-width:2.6}
+  .nodecard{transition:opacity .35s}.nodecap{opacity:0;pointer-events:none;transition:opacity .35s}
+  #scheme.caps .nodecard{opacity:0;pointer-events:none}
+  #scheme.caps .nodecap{opacity:1;pointer-events:auto}
+  #scheme.view-phases .node{opacity:0;pointer-events:none}
+  #scheme.view-taiji .node.eng,#scheme.view-phases .node.eng{opacity:0;pointer-events:none}
+  .vlayer{opacity:0;transition:opacity .45s;pointer-events:none}
+  #scheme.view-structure .d-structure{opacity:1}
+  #scheme.view-steamer .d-steamer{opacity:1}
+  #scheme.view-funnel .d-funnel{opacity:1}
+  #scheme.view-taiji .d-taiji{opacity:1}
+  #scheme.view-phases .d-phases{opacity:1}
+  #scheme.view-phases .d-phases .hit{pointer-events:auto}
+  #scheme.dim .node:not(.hl){opacity:.3}
+  #hlPair,#hlLabel{opacity:0;transition:opacity .2s;pointer-events:none}
+  #cycArc,#cycLabel{opacity:0;transition:opacity .25s;pointer-events:none}
+  #scheme.show-cyc #cycArc,#scheme.show-cyc #cycLabel{opacity:1}
+  #srcArrows{opacity:0;transition:opacity .25s;pointer-events:none}
+  #scheme.show-src #srcArrows{opacity:.85}
+  .node:hover .nbg{filter:brightness(1.2)} .node.hl .nbg{filter:brightness(1.3)}
+  .phcard{cursor:pointer} .phcard:hover rect{filter:brightness(1.25)}
+  .hit{cursor:pointer}
+  @media (prefers-reduced-motion: reduce){ .node,.vlayer,#hlPair,#hlLabel,#srcArrows,.nodecard,.nodecap,.tab,.tbtn{transition:none !important} }
+  @media print{
+    :root{--bg:#fff;--panel:#fff;--panel2:#f2f2f2;--line:#ccc;--line2:#bbb;--ink:#111;--ink2:#444;--ink3:#666;
+      --yang:#9a6a18;--yin:#2f5f9a;--engine:#c4521f;--bridge:#7340a0;--qi:#1f8076;--chan:#1f8076;--organ:#9a6a18;
+      --open:#9a6a18;--pivot:#1f8076;--close:#46559c;--wood:#2c804f;--fire:#bb392d;--earth:#9a6a18;--metal:#566073;--water:#2f5f9a}
+    body{background:#fff} .views,.tbtn,.vhint{display:none}
+    .svgbox{background:#fff !important;border:1px solid #ddd} .stage{display:block} aside{max-width:none;margin-top:14px}
+  }
+  @media (max-width:560px){ .brand{font-size:11px;letter-spacing:1.5px} .tab{padding:6px 10px;font-size:12px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand"><b>The Six Channels</b> <span>· atlas of projections</span></div>
+    <div class="views">
+      <div class="tab on" onclick="applyView('structure')">Structure</div>
+      <div class="tab" onclick="applyView('steamer')">Steamer</div>
+      <div class="tab" onclick="applyView('funnel')">Funnel</div>
+      <div class="tab" onclick="applyView('taiji')">Cycle</div>
+      <div class="tab" onclick="applyView('phases')">Five Phases</div>
+      <button class="tbtn" onclick="toggleTheme()" aria-label="Toggle light or dark theme" title="Light / dark">◐</button>
+    </div>
+  </div>
+  <p class="vhint" id="vhint"></p>
+
+  <div class="stage">
+    <div class="svgbox">
+      <svg id="scheme" class="view-structure" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid meet" role="img" aria-label="The Six Channels — interactive atlas of five projections" xmlns="http://www.w3.org/2000/svg">
+        <desc>Six channel levels rearranged across five views — Structure, Steamer, Funnel, Cycle and Five Phases — over the Gate of Vitality engine. Hover or tap a level for its relationships.</desc>
+        <defs>
+          <marker id="aB" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="var(--bridge)"/></marker>
+          <marker id="aE" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="var(--engine)"/></marker>
+          <marker id="aU" markerWidth="10" markerHeight="10" refX="6" refY="5" orient="auto"><path d="M5,0 L10,10 L0,10 z" fill="#8b97ab"/></marker>
+          <radialGradient id="mmGlow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#ef6f40" stop-opacity="0.9"/><stop offset="100%" stop-color="#ef6f40" stop-opacity="0.07"/></radialGradient>
+          <radialGradient id="tjY" cx="50%" cy="38%" r="62%"><stop offset="0%" stop-color="#1c2740" stop-opacity=".55"/><stop offset="100%" stop-color="#1c2740" stop-opacity="0"/></radialGradient>
+          <linearGradient id="yangGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(224,172,82,.16)"/><stop offset="100%" stop-color="rgba(224,172,82,.05)"/></linearGradient>
+          <linearGradient id="yinGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(95,147,207,.16)"/><stop offset="100%" stop-color="rgba(95,147,207,.05)"/></linearGradient>
+          <linearGradient id="funnelG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e0ac52" stop-opacity="0.14"/><stop offset="100%" stop-color="#3a2b66" stop-opacity="0.16"/></linearGradient>
+          <linearGradient id="steamG" x1="0" y1="1" x2="0" y2="0"><stop offset="0%" stop-color="#ef6f40" stop-opacity="0.5"/><stop offset="100%" stop-color="#e0ac52" stop-opacity="0.1"/></linearGradient>
+        </defs>
+
+        <!-- STRUCTURE DECOR -->
+        <g class="vlayer d-structure">
+          <rect x="64" y="85" width="1072" height="130" rx="15" fill="var(--open)" opacity=".06"/>
+          <rect x="64" y="275" width="1072" height="130" rx="15" fill="var(--pivot)" opacity=".06"/>
+          <rect x="64" y="465" width="1072" height="130" rx="15" fill="var(--close)" opacity=".06"/>
+          <g text-anchor="middle" font-size="10.5" font-weight="700" letter-spacing=".5">
+            <text x="34" y="150" transform="rotate(-90 34 150)" fill="var(--open)">EXPANDING · kāi</text>
+            <text x="34" y="340" transform="rotate(-90 34 340)" fill="var(--pivot)">PIVOT · shū</text>
+            <text x="34" y="530" transform="rotate(-90 34 530)" fill="var(--close)">CLOSING · hé</text>
+          </g>
+          <text x="250" y="58" text-anchor="middle" fill="var(--yang)" font-size="13" font-weight="700" letter-spacing="2.5">YANG · exterior</text>
+          <text x="950" y="58" text-anchor="middle" fill="var(--yin)" font-size="13" font-weight="700" letter-spacing="2.5">YIN · interior</text>
+          <text x="600" y="758" text-anchor="middle" fill="var(--ink3)" font-size="11">hover or tap a level for its pair · tap Ming men for the source-qi feed</text>
+        </g>
+
+        <!-- STEAMER DECOR -->
+        <g class="vlayer d-steamer">
+          <rect x="492" y="46" width="216" height="560" rx="16" fill="url(#steamG)" opacity=".5"/>
+          <g stroke="var(--ink3)" stroke-width="1.2" fill="none" opacity=".55">
+            <path d="M455,56 H435 V200 H455"/><path d="M455,250 H435 V290 H455"/><path d="M455,340 H435 V580 H455"/>
+          </g>
+          <g font-size="10.5" fill="var(--ink3)">
+            <text x="428" y="120" transform="rotate(-90 428 120)" text-anchor="middle">top basket · lid</text>
+            <text x="424" y="274" text-anchor="end">dumplings</text>
+            <text x="428" y="455" transform="rotate(-90 428 455)" text-anchor="middle">the pot · water</text>
+            <text x="424" y="652" text-anchor="end">fire</text>
+          </g>
+          <path d="M772,600 V120" stroke="var(--engine)" stroke-width="2" fill="none" marker-end="url(#aE)" opacity=".7"/>
+          <text x="786" y="360" fill="var(--engine)" font-size="11" font-weight="600" transform="rotate(90 786 360)" text-anchor="middle">qi rises &amp; transforms</text>
+          <text x="600" y="712" text-anchor="middle" fill="var(--ink2)" font-size="11.5">Process: the fire below drives transformation upward and outward</text>
+        </g>
+
+        <!-- FUNNEL DECOR -->
+        <g class="vlayer d-funnel">
+          <polygon points="430,52 770,52 660,584 540,584" fill="url(#funnelG)" stroke="#39435a" stroke-width="1" stroke-dasharray="2 6"/>
+          <text x="600" y="40" text-anchor="middle" fill="var(--ink2)" font-size="11.5" font-weight="600">outwardly-expanding &amp; moving</text>
+          <text x="600" y="612" text-anchor="middle" fill="var(--ink2)" font-size="11.5" font-weight="600">inwardly-contracting &amp; still</text>
+          <line x1="814" y1="80" x2="814" y2="560" stroke="#8b97ab" stroke-width="1.5" marker-start="url(#aU)" marker-end="url(#aU)" opacity=".55"/>
+          <g font-size="11" fill="var(--ink3)">
+            <text x="368" y="84">1</text><text x="368" y="179">2</text><text x="368" y="274">3</text>
+            <text x="368" y="369">4</text><text x="368" y="464">5</text><text x="368" y="559">6</text>
+          </g>
+          <text x="600" y="704" text-anchor="middle" fill="var(--ink2)" font-size="11.5">Depth continuum: one gradient from surface to blood, not a ladder</text>
+        </g>
+
+        <!-- TAIJI DECOR -->
+        <g class="vlayer d-taiji">
+          <circle cx="600" cy="400" r="128" fill="url(#tjY)"/>
+          <circle cx="600" cy="400" r="128" fill="none" stroke="var(--line2)" stroke-width="1" opacity=".6"/>
+          <path d="M600,272 A64,64 0 0,1 600,400 A64,64 0 0,0 600,528 A128,128 0 0,1 600,272 Z" fill="#5f93cf" opacity=".16"/>
+          <circle cx="600" cy="336" r="12" fill="#5f93cf" opacity=".22"/><circle cx="600" cy="464" r="12" fill="#e0ac52" opacity=".22"/>
+          <text x="600" y="394" text-anchor="middle" fill="var(--engine)" font-size="13" font-weight="700">Ming men</text>
+          <text x="600" y="414" text-anchor="middle" fill="var(--ink3)" font-size="10.5">source qi · the hub</text>
+          <path id="cycArc" d="M812,600 C600,735 170,720 120,430 C90,320 150,250 259,240" fill="none" stroke="var(--bridge)" stroke-width="2.2" marker-end="url(#aB)"/>
+          <text id="cycLabel" x="108" y="430" fill="var(--bridge)" font-size="11" font-weight="600" transform="rotate(-90 108 430)" text-anchor="middle">Jué yīn reverts → Tài yáng</text>
+          <text x="58" y="400" text-anchor="middle" fill="var(--yang)" font-size="12" font-weight="700" letter-spacing="3" transform="rotate(-90 58 400)">YANG</text>
+          <text x="1142" y="400" text-anchor="middle" fill="var(--yin)" font-size="12" font-weight="700" letter-spacing="3" transform="rotate(90 1142 400)">YIN</text>
+          <text x="600" y="744" text-anchor="middle" fill="var(--ink2)" font-size="11.5">Cycle: hover Jué yīn or Tài yáng to trace the reversal that closes the loop</text>
+        </g>
+
+        <!-- FIVE PHASES DECOR -->
+        <g class="vlayer d-phases">
+          <g id="shengG" stroke="#8b97ab" stroke-width="1.7" fill="none" opacity=".75" marker-end="url(#aU)">
+            <line id="sh0"/><line id="sh1"/><line id="sh2"/><line id="sh3"/><line id="sh4"/>
+          </g>
+          <g id="keG" stroke="#8b97ab" stroke-width="1.1" fill="none" opacity=".4" stroke-dasharray="5 5" marker-end="url(#aU)">
+            <line id="ke0"/><line id="ke1"/><line id="ke2"/><line id="ke3"/><line id="ke4"/>
+          </g>
+          <text x="600" y="396" text-anchor="middle" fill="var(--ink3)" font-size="11">outer ring = generating (shēng)</text>
+          <text x="600" y="414" text-anchor="middle" fill="var(--ink3)" font-size="11">inner star = controlling (kè)</text>
+          <g class="phcard" data-ph="fire" transform="translate(600,196)" onmouseenter="showInfo('ph_fire')" onclick="showInfo('ph_fire')">
+            <rect x="-80" y="-30" width="160" height="60" rx="13" fill="rgba(224,89,75,.15)" stroke="var(--fire)" stroke-width="1.4"/>
+            <text x="0" y="-5" text-anchor="middle" fill="var(--fire)" font-size="15" font-weight="700">Fire</text>
+            <text x="0" y="15" text-anchor="middle" fill="var(--ink2)" font-size="10.5">HT · SI · PC · SJ</text></g>
+          <g class="phcard" data-ph="earth" transform="translate(778,350)" onmouseenter="showInfo('ph_earth')" onclick="showInfo('ph_earth')">
+            <rect x="-80" y="-30" width="160" height="60" rx="13" fill="rgba(216,166,78,.15)" stroke="var(--earth)" stroke-width="1.4"/>
+            <text x="0" y="-5" text-anchor="middle" fill="var(--earth)" font-size="15" font-weight="700">Earth</text>
+            <text x="0" y="15" text-anchor="middle" fill="var(--ink2)" font-size="10.5">Spleen · Stomach</text></g>
+          <g class="phcard" data-ph="metal" transform="translate(702,560)" onmouseenter="showInfo('ph_metal')" onclick="showInfo('ph_metal')">
+            <rect x="-80" y="-30" width="160" height="60" rx="13" fill="rgba(205,213,222,.13)" stroke="var(--metal)" stroke-width="1.4"/>
+            <text x="0" y="-5" text-anchor="middle" fill="var(--metal)" font-size="15" font-weight="700">Metal</text>
+            <text x="0" y="15" text-anchor="middle" fill="var(--ink2)" font-size="10.5">Lung · Large Int.</text></g>
+          <g class="phcard" data-ph="water" transform="translate(498,560)" onmouseenter="showInfo('ph_water')" onclick="showInfo('ph_water')">
+            <rect x="-80" y="-30" width="160" height="60" rx="13" fill="rgba(79,134,198,.16)" stroke="var(--water)" stroke-width="1.4"/>
+            <text x="0" y="-5" text-anchor="middle" fill="var(--water)" font-size="15" font-weight="700">Water</text>
+            <text x="0" y="15" text-anchor="middle" fill="var(--ink2)" font-size="10.5">Kidney · Bladder</text></g>
+          <g class="phcard" data-ph="wood" transform="translate(422,350)" onmouseenter="showInfo('ph_wood')" onclick="showInfo('ph_wood')">
+            <rect x="-80" y="-30" width="160" height="60" rx="13" fill="rgba(78,183,132,.15)" stroke="var(--wood)" stroke-width="1.4"/>
+            <text x="0" y="-5" text-anchor="middle" fill="var(--wood)" font-size="15" font-weight="700">Wood</text>
+            <text x="0" y="15" text-anchor="middle" fill="var(--ink2)" font-size="10.5">Liver · Gallbladder</text></g>
+          <text x="600" y="726" text-anchor="middle" fill="var(--ink2)" font-size="11.5">Organs: the six levels distributed across the five-phase web</text>
+        </g>
+
+        <!-- HOVER OVERLAYS -->
+        <g id="srcArrows" stroke="var(--engine)" stroke-width="1.7" fill="none" marker-end="url(#aE)"><path id="src1"/><path id="src2"/></g>
+        <path id="hlPair" fill="none" stroke="var(--bridge)" stroke-width="2.4"/>
+        <text id="hlLabel" text-anchor="middle" fill="var(--bridge)" font-size="11.5" font-weight="600"></text>
+
+        <!-- NODES -->
+        <g class="node" data-id="tai_yang" style="transform:translate(250px,150px)" onmouseenter="nodeEnter('tai_yang')" onmouseleave="nodeLeave()" onclick="nodeTap('tai_yang')">
+          <g class="nodecard"><rect class="nbg" x="-150" y="-65" width="300" height="130" rx="15" fill="url(#yangGrad)" stroke="var(--yang-bd)" stroke-width="1.4"/>
+            <text x="-130" y="-30" fill="var(--yang)" font-size="21" font-weight="700">Tài yáng</text>
+            <text x="130" y="-31" text-anchor="end" fill="var(--ink3)" font-size="12" font-style="italic">greater yang</text>
+            <text x="-130" y="-7" fill="var(--open)" font-size="12" font-weight="600">kāi · expanding · surface</text>
+            <text x="-130" y="22" fill="var(--ink)" font-size="14">Small Intestine + Bladder</text>
+            <text x="-130" y="45" fill="var(--ink2)" font-size="12">Cold · first defense</text></g>
+          <g class="nodecap"><rect class="nbg" x="-94" y="-26" width="188" height="52" rx="12" fill="url(#yangGrad)" stroke="var(--yang-bd)" stroke-width="1.3"/>
+            <rect x="-92" y="-22" width="6" height="44" rx="3" fill="var(--open)"/>
+            <text x="-76" y="-3" fill="var(--yang)" font-size="15" font-weight="700">Tài yáng</text>
+            <text x="-76" y="15" fill="var(--ink2)" font-size="10.5">SI + Bladder · Cold</text></g>
+        </g>
+        <g class="node" data-id="shao_yang" style="transform:translate(250px,340px)" onmouseenter="nodeEnter('shao_yang')" onmouseleave="nodeLeave()" onclick="nodeTap('shao_yang')">
+          <g class="nodecard"><rect class="nbg" x="-150" y="-65" width="300" height="130" rx="15" fill="url(#yangGrad)" stroke="var(--yang-bd)" stroke-width="1.4"/>
+            <text x="-130" y="-30" fill="var(--yang)" font-size="21" font-weight="700">Shǎo yáng</text>
+            <text x="130" y="-31" text-anchor="end" fill="var(--ink3)" font-size="12" font-style="italic">lesser yang</text>
+            <text x="-130" y="-7" fill="var(--pivot)" font-size="12" font-weight="600">shū · pivot · between out/in</text>
+            <text x="-130" y="22" fill="var(--ink)" font-size="14">Triple Burner + Gallbladder</text>
+            <text x="-130" y="45" fill="var(--ink2)" font-size="12">Summerheat · regulates</text></g>
+          <g class="nodecap"><rect class="nbg" x="-94" y="-26" width="188" height="52" rx="12" fill="url(#yangGrad)" stroke="var(--yang-bd)" stroke-width="1.3"/>
+            <rect x="-92" y="-22" width="6" height="44" rx="3" fill="var(--pivot)"/>
+            <text x="-76" y="-3" fill="var(--yang)" font-size="15" font-weight="700">Shǎo yáng</text>
+            <text x="-76" y="15" fill="var(--ink2)" font-size="10.5">SJ + GB · Summerheat</text></g>
+        </g>
+        <g class="node" data-id="yang_ming" style="transform:translate(250px,530px)" onmouseenter="nodeEnter('yang_ming')" onmouseleave="nodeLeave()" onclick="nodeTap('yang_ming')">
+          <g class="nodecard"><rect class="nbg" x="-150" y="-65" width="300" height="130" rx="15" fill="url(#yangGrad)" stroke="var(--yang-bd)" stroke-width="1.4"/>
+            <text x="-130" y="-30" fill="var(--yang)" font-size="21" font-weight="700">Yáng míng</text>
+            <text x="130" y="-31" text-anchor="end" fill="var(--ink3)" font-size="12" font-style="italic">yang brightness</text>
+            <text x="-130" y="-7" fill="var(--close)" font-size="12" font-weight="600">hé · closing · innermost yang</text>
+            <text x="-130" y="22" fill="var(--ink)" font-size="14">Large Intestine + Stomach</text>
+            <text x="-130" y="45" fill="var(--ink2)" font-size="12">Dryness · makes postnatal qi</text></g>
+          <g class="nodecap"><rect class="nbg" x="-94" y="-26" width="188" height="52" rx="12" fill="url(#yangGrad)" stroke="var(--yang-bd)" stroke-width="1.3"/>
+            <rect x="-92" y="-22" width="6" height="44" rx="3" fill="var(--close)"/>
+            <text x="-76" y="-3" fill="var(--yang)" font-size="15" font-weight="700">Yáng míng</text>
+            <text x="-76" y="15" fill="var(--ink2)" font-size="10.5">LI + Stomach · Dryness</text></g>
+        </g>
+        <g class="node" data-id="tai_yin" style="transform:translate(950px,150px)" onmouseenter="nodeEnter('tai_yin')" onmouseleave="nodeLeave()" onclick="nodeTap('tai_yin')">
+          <g class="nodecard"><rect class="nbg" x="-150" y="-65" width="300" height="130" rx="15" fill="url(#yinGrad)" stroke="var(--yin-bd)" stroke-width="1.4"/>
+            <text x="-130" y="-30" fill="var(--yin)" font-size="21" font-weight="700">Tài yīn</text>
+            <text x="130" y="-31" text-anchor="end" fill="var(--ink3)" font-size="12" font-style="italic">greater yin</text>
+            <text x="-130" y="-7" fill="var(--open)" font-size="12" font-weight="600">kāi · expanding · to interior</text>
+            <text x="-130" y="22" fill="var(--ink)" font-size="14">Lung + Spleen</text>
+            <text x="-130" y="45" fill="var(--ink2)" font-size="12">Damp · nourishes tissues</text>
+            <a href="tai-yin.html" target="_top"><text x="130" y="46" text-anchor="end" fill="var(--chan)" font-size="11.5" font-weight="700" onclick="event.stopPropagation()">deep-dive ↗</text></a></g>
+          <g class="nodecap"><rect class="nbg" x="-94" y="-26" width="188" height="52" rx="12" fill="url(#yinGrad)" stroke="var(--yin-bd)" stroke-width="1.3"/>
+            <rect x="-92" y="-22" width="6" height="44" rx="3" fill="var(--open)"/>
+            <text x="-76" y="-3" fill="var(--yin)" font-size="15" font-weight="700">Tài yīn</text>
+            <text x="-76" y="15" fill="var(--ink2)" font-size="10.5">Lung + Spleen · Damp</text></g>
+        </g>
+        <g class="node" data-id="shao_yin" style="transform:translate(950px,340px)" onmouseenter="nodeEnter('shao_yin')" onmouseleave="nodeLeave()" onclick="nodeTap('shao_yin')">
+          <g class="nodecard"><rect class="nbg" x="-150" y="-65" width="300" height="130" rx="15" fill="url(#yinGrad)" stroke="var(--yin-bd)" stroke-width="1.4"/>
+            <text x="-130" y="-30" fill="var(--yin)" font-size="21" font-weight="700">Shǎo yīn</text>
+            <text x="130" y="-31" text-anchor="end" fill="var(--ink3)" font-size="12" font-style="italic">lesser yin</text>
+            <text x="-130" y="-7" fill="var(--pivot)" font-size="12" font-weight="600">shū · pivot · center of yin</text>
+            <text x="-130" y="22" fill="var(--ink)" font-size="14">Heart + Kidney</text>
+            <text x="-130" y="45" fill="var(--ink2)" font-size="12">Fire · source of warmth</text></g>
+          <g class="nodecap"><rect class="nbg" x="-94" y="-26" width="188" height="52" rx="12" fill="url(#yinGrad)" stroke="var(--yin-bd)" stroke-width="1.3"/>
+            <rect x="-92" y="-22" width="6" height="44" rx="3" fill="var(--pivot)"/>
+            <text x="-76" y="-3" fill="var(--yin)" font-size="15" font-weight="700">Shǎo yīn</text>
+            <text x="-76" y="15" fill="var(--ink2)" font-size="10.5">Heart + Kidney · Fire</text></g>
+        </g>
+        <g class="node" data-id="jue_yin" style="transform:translate(950px,530px)" onmouseenter="nodeEnter('jue_yin')" onmouseleave="nodeLeave()" onclick="nodeTap('jue_yin')">
+          <g class="nodecard"><rect class="nbg" x="-150" y="-65" width="300" height="130" rx="15" fill="url(#yinGrad)" stroke="var(--yin-bd)" stroke-width="1.4"/>
+            <text x="-130" y="-30" fill="var(--yin)" font-size="21" font-weight="700">Jué yīn</text>
+            <text x="130" y="-31" text-anchor="end" fill="var(--ink3)" font-size="12" font-style="italic">terminal yin</text>
+            <text x="-130" y="-7" fill="var(--close)" font-size="12" font-weight="600">hé · closing / revert · core</text>
+            <text x="-130" y="22" fill="var(--ink)" font-size="14">Pericardium + Liver</text>
+            <text x="-130" y="45" fill="var(--ink2)" font-size="12">Wind · reservoir of blood</text></g>
+          <g class="nodecap"><rect class="nbg" x="-94" y="-26" width="188" height="52" rx="12" fill="url(#yinGrad)" stroke="var(--yin-bd)" stroke-width="1.3"/>
+            <rect x="-92" y="-22" width="6" height="44" rx="3" fill="var(--close)"/>
+            <text x="-76" y="-3" fill="var(--yin)" font-size="15" font-weight="700">Jué yīn</text>
+            <text x="-76" y="15" fill="var(--ink2)" font-size="10.5">PC + Liver · Wind</text></g>
+        </g>
+
+        <g class="node eng" data-id="engine" style="transform:translate(600px,690px)" onmouseenter="nodeEnter('engine')" onmouseleave="nodeLeave()" onclick="nodeTap('engine')">
+          <g class="nodecard"><ellipse cx="0" cy="0" rx="200" ry="46" fill="url(#mmGlow)"/><ellipse class="nbg" cx="0" cy="0" rx="178" ry="40" fill="#1b120d" stroke="var(--engine)" stroke-width="1.7"/>
+            <text x="0" y="-5" text-anchor="middle" fill="var(--engine)" font-size="15" font-weight="700">Ming men · Gate of Vitality</text>
+            <text x="0" y="14" text-anchor="middle" fill="#f0b79e" font-size="11.5">source qi → ignites all transformation</text></g>
+          <g class="nodecap"><ellipse class="nbg" cx="0" cy="0" rx="120" ry="28" fill="#1b120d" stroke="var(--engine)" stroke-width="1.5"/>
+            <text x="0" y="4" text-anchor="middle" fill="var(--engine)" font-size="13" font-weight="700">🜂 Ming men</text></g>
+        </g>
+      </svg>
+    </div>
+
+    <aside><div class="card" id="info"></div></aside>
+  </div>
+
+  <div class="legendbar">
+    <span><i style="border-top-color:var(--bridge)"></i>Pair / cycle</span>
+    <span><i style="border-top-color:var(--engine)"></i>Source qi</span>
+    <span><i style="border-top-color:#8b97ab"></i>Generating (shēng)</span>
+    <span><i style="border-top-color:#8b97ab;border-top-style:dashed"></i>Controlling (kè)</span>
+    <span><i style="border-top-color:var(--chan)"></i><span style="color:var(--chan)">Channel</span> vs <span style="color:var(--organ)">Organ</span></span>
+    <span class="attrib">After Wang Ju-Yi &amp; Robertson, "Applied Channel Theory," figs 2.7–2.10</span>
+  </div>
+</div>
+
+<script>
+const STRUCT = {
+  tai_yang:{tag:"Structure · expanding · surface",tc:"var(--yang)",bg:"rgba(224,172,82,.18)",title:"Tài yáng — greater yang",sub:"Small Intestine (arm) + Bladder (leg)",
+    rows:[["Role","kāi (open) — the most external level, first to meet the world"],["Six Qi","Cold — tài yáng is the body's shield against external cold"],["Channel","Largest surface of all channels; opens and closes the interstices (còu lǐ) and warms/discharges (xī fā). Its back-shu points link to every internal organ","ch"],["Organ","Bladder discharges fluids as urine; Small Intestine sorts clear from turbid, returning the clear to build blood","og"],["Nature","Fu organ — full but not replete: hollow, must keep moving or it congests"],["Pair","Shǎo yīn — gate-of-vitality fire drives bladder dispersion; surplus heart heat leaves via urine"]],
+    note:"Clinic: wind-cold invasion, stiff neck and back, sweating and urinary imbalance."},
+  shao_yang:{tag:"Structure · pivot",tc:"var(--yang)",bg:"rgba(224,172,82,.18)",title:"Shǎo yáng — lesser yang",sub:"Triple Burner (arm) + Gallbladder (leg)",
+    rows:[["Role","shū (pivot) — between exterior and interior; governs the side of the body"],["Six Qi","Summerheat — slow heat that carries damp"],["Channel","Regulates qi and fluids in the spaces around the organs and the joints (sinew-bones); clears and drains heat, frees clumped qi","ch"],["Organ","Gallbladder decides and stores bile; Triple Burner carries source qi and fluids through the three burners","og"],["Nature","Fu organ — full but not replete; conducts the ministerial fire"],["Pair","Jué yīn — its fire and movement enliven the still blood of liver and pericardium"]],
+    note:"Clinic: alternating chills and fever, bitter mouth, costal tension, migraine, ear and eye disorders."},
+  yang_ming:{tag:"Structure · closing",tc:"var(--yang)",bg:"rgba(224,172,82,.18)",title:"Yáng míng — yang brightness",sub:"Large Intestine (arm) + Stomach (leg)",
+    rows:[["Role","hé (close) inward — the innermost yang, the warm core"],["Six Qi","Dryness"],["Channel","'Full of qi and blood'; LI-4 and LI-11 clear heat and reach the exterior through the lung link","ch"],["Organ","Stomach ferments food into postnatal essence; Large Intestine wrings out fluids and passes the waste","og"],["Nature","Fu organ — full but not replete; the great reservoir of postnatal qi"],["Pair","Tài yīn — its dry warmth balances spleen damp across digestion"]],
+    note:"Clinic: high fever and thirst, constipation, appetite and absorption (ST-36 regulates pace)."},
+  tai_yin:{tag:"Structure · expanding",tc:"var(--yin)",bg:"rgba(95,147,207,.18)",title:"Tài yīn — greater yin",sub:"Lung (arm) + Spleen (leg)",
+    rows:[["Role","kāi (open) — but to the internal environment, not to the world"],["Six Qi","Damp"],["Channel","Keeps the skin 'breathing' and nourished; the outermost of the yin levels","ch"],["Organ","Spleen transforms fluids and builds nutrition; Lung moves and spreads it — the nourishing bath around every cell","og"],["Nature","Zang organ — replete but not full: stores essence, does not pass it on"],["Phases","Earth→Metal: spleen (earth) generates lung (metal)"],["Pair","Yáng míng"]],
+    note:"Clinic: fatigue, poor appetite, loose stool, edema, phlegm, weak voice or cough. <a href=\"tai-yin.html\" style=\"color:var(--chan);font-weight:600\">Open Tài yīn deep-dive →</a>"},
+  shao_yin:{tag:"Structure · pivot · center",tc:"var(--yin)",bg:"rgba(95,147,207,.18)",title:"Shǎo yīn — lesser yin",sub:"Heart (arm) + Kidney (leg)",
+    rows:[["Role","shū (pivot) — the very center of yin"],["Six Qi","Fire"],["Channel","Drains fire, clears the heart, dredges and opens the yin collaterals — moves blood, breaks stasis-heat","ch"],["Organ","The source of metabolic fire: the gate of vitality plus the sovereign fire of the heart; warms the body by moving blood","og"],["Nature","Zang organ — replete but not full; holds prenatal essence"],["Phases","Fire ⇄ Water: heart and kidney in mutual control"],["Pair","Tài yáng"]],
+    note:"Channel ≠ organ at its sharpest — the channel clears fire, the organs make it. Clinic: insomnia, palpitations, heart-kidney disharmony."},
+  jue_yin:{tag:"Structure · closing · core",tc:"var(--yin)",bg:"rgba(95,147,207,.18)",title:"Jué yīn — terminal / reverting yin",sub:"Pericardium (arm) + Liver (leg)",
+    rows:[["Role","hé (close) and revert — the deepest, where yin turns back to yang"],["Six Qi","Wind"],["Channel","Fosters yin and nourishes blood, governs its distribution; dredges external wind and extinguishes internal wind","ch"],["Organ","Liver stores and meters out blood; Pericardium shields the heart with yin blood — full blood calms wind","og"],["Nature","Zang organ — replete but not full; the great blood reservoir"],["Phases","Wood→Fire: liver (wood) generates pericardium (fire)"],["Pair","Shǎo yáng"]],
+    note:"Clinic: tremor and spasm, migrating rashes, dizziness, menstrual and blood disorders."},
+  engine:{tag:"Structure · the engine",tc:"var(--engine)",bg:"rgba(239,111,64,.16)",title:"Ming men — Gate of Vitality",sub:"source qi (yuán qì)",
+    rows:[["Source","Vitality fire between the kidneys, born of yin essence; it ignites qi transformation in every organ","ch"],["Two pivots","Shǎo yīn is the source of prenatal fire; Shǎo yáng (San Jiao) is its transport","og"],["Realization","Postnatal qi matures at Yáng míng; blood is stored at Jué yīn"]],
+    note:"Tap to see the feed to the two pivots. Weaken the fire and the whole system slows."}
+};
+const STEAM = {
+  tai_yang:{tag:"Steamer · steam leaving the top",tc:"var(--yang)",bg:"rgba(224,172,82,.18)",title:"Tài yáng",sub:"the steam that escapes upward",
+    rows:[["In the process","The final exit: heat and defense reach the body surface and vent out"],["Depends on","Everything below — if the boil weakens, no steam reaches here"],["Cue","Treat exterior patterns by releasing the surface, not by tonifying the depth"]],note:"The top of the transformation, not its driver."},
+  shao_yang:{tag:"Steamer · the bamboo lid",tc:"var(--yang)",bg:"rgba(224,172,82,.18)",title:"Shǎo yáng",sub:"the throttle of the steamer",
+    rows:[["In the process","Regulates how much steam is released versus held — the valve between in and out"],["Holds or vents","Low inner heat: it keeps steam in; high heat: it lets steam rise"],["Cue","When the pivot jams, heat clumps — clear and free, do not force"]],note:"Pure regulation — it adds no heat, it governs flow."},
+  yang_ming:{tag:"Steamer · the dumplings",tc:"var(--yang)",bg:"rgba(224,172,82,.18)",title:"Yáng míng",sub:"the middle basket, held in warmth",
+    rows:[["In the process","Food held in steam and warmth ferments into postnatal essence"],["Between","Receives heat from the pot below; passes steam up to the lid"],["Cue","Chronic depletion often starts here — rebuild postnatal qi"]],note:"Where raw matter becomes usable qi."},
+  tai_yin:{tag:"Steamer · steam off the water",tc:"var(--yin)",bg:"rgba(95,147,207,.18)",title:"Tài yīn",sub:"the first rising nourishment",
+    rows:[["In the process","The fluids of the boil lift as steam — nourishment opens toward the interior"],["Carries","The bath of ying that feeds the baskets above"],["Cue","If the steam is weak and watery, damp accumulates — warm and transform"]],note:"The meeting point where water becomes vapor."},
+  shao_yin:{tag:"Steamer · bubbles in the boil",tc:"var(--yin)",bg:"rgba(95,147,207,.18)",title:"Shǎo yīn",sub:"the pivot of the boil",
+    rows:[["In the process","Prenatal fire turns still water into rising motion — the engine's own pivot"],["Sends","Heat and movement upward through the whole pot"],["Cue","Slow bubbles = source-qi deficiency; the cold reaches upward"]],note:"Without these bubbles the steamer goes cold and quiet."},
+  jue_yin:{tag:"Steamer · the iron pot",tc:"var(--yin)",bg:"rgba(95,147,207,.18)",title:"Jué yīn",sub:"the vessel that holds the yin",
+    rows:[["In the process","The solid base that holds blood and water for the fire to act on"],["Begins","From this depth the upward transformation starts"],["Cue","If the pot is empty (blood deficient), wind stirs and the boil is unstable"]],note:"Holds the yin still so heat can build."},
+  engine:{tag:"Steamer · the fire below",tc:"var(--engine)",bg:"rgba(239,111,64,.16)",title:"Ming men",sub:"the flame under the pot",
+    rows:[["In the process","The primary heat — the reason anything above moves at all"],["If weak","Fewer bubbles, less steam, the lid stops venting — the whole caisson stalls"],["Cue","Deep cold and exhaustion: rebuild the fire at the root"]],note:"Read this view bottom-up: the fire drives everything."}
+};
+const FUNNEL = {
+  tai_yang:{tag:"Funnel · depth 1",tc:"var(--yang)",bg:"rgba(224,172,82,.18)",title:"Tài yáng",sub:"widest · most external",
+    rows:[["On the axis","Maximum outward movement, least substance — pure expansion"],["Neighbour","Flows into Shǎo yáng as the movement begins to turn"],["Reads as","Acute, superficial, fast-moving — meet it at the surface"]],note:"The top of the funnel: all motion, little matter."},
+  shao_yang:{tag:"Funnel · depth 2",tc:"var(--yang)",bg:"rgba(224,172,82,.18)",title:"Shǎo yáng",sub:"still moving · the outward pivot",
+    rows:[["On the axis","Yang movement continues but begins to find its turn"],["Between","Surface expansion above, the closing core below"],["Reads as","Half-exterior, half-interior — the classic 'in-between' depth"]],note:"A step inward along the continuum."},
+  yang_ming:{tag:"Funnel · depth 3",tc:"var(--yang)",bg:"rgba(224,172,82,.18)",title:"Yáng míng",sub:"yang closes inward",
+    rows:[["On the axis","Movement slows; qi and blood gather — the warm core of yang"],["Threshold","The last yang step before substance takes over"],["Reads as","Deep but still yang — fullness, heat, the interior of the exterior"]],note:"Where outward motion starts to settle."},
+  tai_yin:{tag:"Funnel · depth 4",tc:"var(--yin)",bg:"rgba(95,147,207,.18)",title:"Tài yīn",sub:"yin opens · substance begins",
+    rows:[["On the axis","Nourishing substance starts to outweigh movement"],["Crossover","The first yin step — matter begins to lead"],["Reads as","Interior, but the outermost of the interior"]],note:"The continuum tips from motion toward substance."},
+  shao_yin:{tag:"Funnel · depth 5",tc:"var(--yin)",bg:"rgba(95,147,207,.18)",title:"Shǎo yīn",sub:"the yin pivot · deep but turning",
+    rows:[["On the axis","Prenatal substance plus the movement of blood — depth that still turns"],["Near the floor","One step from the stillest point"],["Reads as","Grave conditions reach this depth; the root is touched"]],note:"Deep, dense, yet kept alive by its pivot."},
+  jue_yin:{tag:"Funnel · depth 6",tc:"var(--yin)",bg:"rgba(95,147,207,.18)",title:"Jué yīn",sub:"narrowest · deepest",
+    rows:[["On the axis","Maximum substance (blood), least movement — rest and storage"],["The floor","Stillness — and the seed of return"],["Reads as","The deepest disorders; from here illness either resolves or reverts"]],note:"The bottom of the funnel: all matter, almost no motion."},
+  engine:{tag:"Funnel · the still point",tc:"var(--engine)",bg:"rgba(239,111,64,.16)",title:"Ming men",sub:"origin beneath the continuum",
+    rows:[["On the axis","The fixed point the whole gradient rests on"],["Not a level","It is the source the scale flows from, not a step on it"]],note:"Below depth 6 — where movement is first born."}
+};
+const TAIJI = {
+  tai_yang:{tag:"Cycle · crest of yang",tc:"var(--yang)",bg:"rgba(224,172,82,.18)",title:"Tài yáng",sub:"top of the descent",
+    rows:[["In the loop","Expansion at its peak — the yang arc begins to descend the left side"],["Comes from","Jué yīn — the reversal feeds new yang here"],["Reads as","Dawn of the cycle: maximum outward radiance"]],note:"Where the cycle is reborn after its deepest point."},
+  shao_yang:{tag:"Cycle · yang pivot",tc:"var(--yang)",bg:"rgba(224,172,82,.18)",title:"Shǎo yáng",sub:"mid-descent of the yang arc",
+    rows:[["In the loop","The turn of the outer arc — yang folding toward the interior"],["Next","Yáng míng, where yang meets yin"],["Reads as","The hinge that keeps descent smooth"]],note:"The hinge of the descending yang."},
+  yang_ming:{tag:"Cycle · yang meets yin",tc:"var(--yang)",bg:"rgba(224,172,82,.18)",title:"Yáng míng",sub:"the handover",
+    rows:[["In the loop","Yang closes and passes the process to the yin arc"],["Crossing","The lower seam of the wheel, into Tài yīn"],["Reads as","Noon turning toward afternoon — fullness before descent into yin"]],note:"The seam where yang becomes yin."},
+  tai_yin:{tag:"Cycle · yin opens",tc:"var(--yin)",bg:"rgba(95,147,207,.18)",title:"Tài yīn",sub:"top of the yin arc",
+    rows:[["In the loop","Substance begins; the right-side arc starts its descent"],["Next","Shǎo yīn, the yin pivot"],["Reads as","Dusk: gathering inward, nourishment leading"]],note:"Yin's outward face on the turning wheel."},
+  shao_yin:{tag:"Cycle · yin pivot",tc:"var(--yin)",bg:"rgba(95,147,207,.18)",title:"Shǎo yīn",sub:"mid-arc of yin",
+    rows:[["In the loop","Prenatal fire keeps the turning alive at the center of yin"],["Next","Jué yīn, the term and reversal"],["Reads as","Midnight fire — the spark that prevents total stillness"]],note:"The fire that keeps the wheel from stalling."},
+  jue_yin:{tag:"Cycle · term & reversal",tc:"var(--yin)",bg:"rgba(95,147,207,.18)",title:"Jué yīn",sub:"the loop closes",
+    rows:[["In the loop","The deepest yin — and from it the seed of new yang appears"],["Reverts to","Tài yáng — closing the circle"],["Reads as","The darkest point that already contains the return"]],note:"What the static map cannot show: the end becomes the beginning."},
+  engine:{tag:"Cycle · the hub",tc:"var(--engine)",bg:"rgba(239,111,64,.16)",title:"Ming men",sub:"the center that spins the wheel",
+    rows:[["In the loop","Source qi at the hub turns the whole cycle from within"],["Reads as","Not on the rim — the still axle every spoke depends on"]],note:"Hidden at the center of the taiji."}
+};
+const VIEWINFO = {structure:STRUCT, steamer:STEAM, funnel:FUNNEL, taiji:TAIJI};
+const PHASES = {
+  ph_wood:{tag:"Five Phases · Wood",tc:"var(--wood)",bg:"rgba(78,183,132,.16)",title:"Wood — Liver · Gallbladder",sub:"jué yīn (Liver) · shǎo yáng (Gallbladder)",
+    rows:[["Generates","Fire — wood feeds the flame (Liver nourishes the Pericardium)"],["Controls","Earth — Liver dredging paces Spleen metabolism, speeding or slowing it"],["Born of","Water — Kidney is the root of the Liver"],["Nature","Movement, dredging and draining; rises and spreads"]],note:"Season spring · climate wind. Stagnation here breeds heat and rising yang."},
+  ph_fire:{tag:"Five Phases · Fire",tc:"var(--fire)",bg:"rgba(224,89,75,.16)",title:"Fire — Heart · SI + Pericardium · SJ",sub:"shǎo yīn (sovereign fire) · jué yīn (ministerial fire)",
+    rows:[["Generates","Earth — fire makes ash (Heart warms the Spleen)"],["Controls","Metal — fire melts metal"],["Born of","Wood"],["Two fires","Sovereign fire of the Heart, and ministerial fire of the gate of vitality carried via Pericardium / San Jiao"]],note:"Season summer. The only phase the six levels assign to two organ pairs."},
+  ph_earth:{tag:"Five Phases · Earth",tc:"var(--earth)",bg:"rgba(216,166,78,.16)",title:"Earth — Spleen · Stomach",sub:"tài yīn (Spleen) · yáng míng (Stomach)",
+    rows:[["Generates","Metal — Spleen builds the Lung"],["Controls","Water — earth dams water (Spleen governs fluids)"],["Born of","Fire"],["Nature","The pivot of postnatal nourishment; transforms food into qi and blood"]],note:"Centre of the chart — feeds all the others through digestion."},
+  ph_metal:{tag:"Five Phases · Metal",tc:"var(--metal)",bg:"rgba(205,213,222,.16)",title:"Metal — Lung · Large Intestine",sub:"tài yīn (Lung) · yáng míng (Large Intestine)",
+    rows:[["Generates","Water — Lung descends fluids to the Kidney"],["Controls","Wood — metal cuts wood (Lung qi tempers Liver rising)"],["Born of","Earth"],["Nature","Descends and disperses; governs the exterior and skin"]],note:"Pairs with the dry/damp balance against Spleen earth."},
+  ph_water:{tag:"Five Phases · Water",tc:"var(--water)",bg:"rgba(79,134,198,.16)",title:"Water — Kidney · Bladder",sub:"shǎo yīn (Kidney) · tài yáng (Bladder)",
+    rows:[["Generates","Wood — Kidney is the root of the Liver"],["Controls","Fire — Kidney water tempers Heart fire"],["Born of","Metal"],["Nature","Stores essence and houses the gate of vitality — the prenatal root"]],note:"Season winter. Deepest store; the fire of life is rooted here."}
+};
+const CYCLEINFO = {tag:"Cycle · reversion",tc:"var(--bridge)",bg:"rgba(191,138,230,.18)",title:"Jué yīn → Tài yáng",sub:"the loop closes",
+  rows:[["Idea","Yin reaches its term and reverts to yang — the deepest point becomes the seed of the most external"],["Why","The six levels are a closed, turning cycle, not a dead end"],["Clinic","Recovery often turns here; deep cold can suddenly throw heat outward"]],note:"The reversal the static map cannot show."};
+const VINFO = {
+  structure:{tag:"View · Structure",tc:"#7fb0e6",bg:"rgba(95,147,207,.16)",title:"Pairs, roles & engine",sub:"The canonical butterfly — yang left, yin right.",
+    rows:[["Rows","Each row is a role: Expanding · Pivot · Closing (kāi · shū · hé)"],["Diagonals","Interior-exterior organ pairs cross diagonally; the role shifts one step"],["Connections","Hover or tap a level for its pair; tap Ming men for the source-qi feed"],["Per card","Each level separates Channel from Organ function","ch"]],note:"Lines appear on demand so the grid stays clean. Tap a card for full detail."},
+  steamer:{tag:"View · Steamer",tc:"var(--engine)",bg:"rgba(239,111,64,.16)",title:"The process of transformation",sub:"Energy rises from the fire below.",
+    rows:[["Read","Bottom-up: fire (Ming men) → pot → steam → baskets → out the top"],["Shows","Why a weak source-fire slows the whole caisson"],["Hover/tap","Each capsule for its role in the boil"]],note:"Tài yáng is steam leaving; Jué yīn is the iron pot; Ming men is the flame."},
+  funnel:{tag:"View · Funnel",tc:"#7fb0e6",bg:"rgba(95,147,207,.16)",title:"The depth continuum",sub:"From movement to stillness.",
+    rows:[["Axis","Outwardly-expanding & moving (top) → inwardly-contracting & still (bottom)"],["Order","Depth 1 (Tài yáng) down to 6 (Jué yīn)"],["Hover/tap","Each level for where it sits on the gradient"]],note:"Same order as the steamer, read as one continuous depth — not a ladder."},
+  taiji:{tag:"View · Cycle",tc:"var(--bridge)",bg:"rgba(191,138,230,.18)",title:"The turning loop",sub:"Yang left, yin right, around one center.",
+    rows:[["Closure","Jué yīn reverts to Tài yáng — the deepest point seeds the most external"],["Center","Ming men, the source, at the hub"],["Hover/tap","Each level for its place in the turn; the arc for the reversal"]],note:"What the static map cannot show: the system is cyclic and alive."},
+  phases:{tag:"View · Five Phases",tc:"var(--wood)",bg:"rgba(78,183,132,.16)",title:"The organ web",sub:"Generating ring + controlling star.",
+    rows:[["Outer ring","Generating (shēng): Wood→Fire→Earth→Metal→Water→Wood"],["Inner star","Controlling (kè): each phase restrains another across the star"],["Hover/tap","A phase card for its organs, generation and control"]],note:"Here the unit is organs — the six levels spread across the five phases (Fire holds two)."}
+};
+const PAIR={tai_yang:'shao_yin',shao_yin:'tai_yang',shao_yang:'jue_yin',jue_yin:'shao_yang',yang_ming:'tai_yin',tai_yin:'yang_ming'};
+const PAIRLABEL={tai_yang:'Water ⇄ Fire',shao_yin:'Water ⇄ Fire',shao_yang:'Wood · fire',jue_yin:'Wood · fire',yang_ming:'Dryness ⇄ Damp',tai_yin:'Dryness ⇄ Damp'};
+const VIEWS={
+  structure:{tai_yang:[250,150],shao_yang:[250,340],yang_ming:[250,530],tai_yin:[950,150],shao_yin:[950,340],jue_yin:[950,530],engine:[600,690]},
+  steamer:{tai_yang:[600,80],shao_yang:[600,175],yang_ming:[600,270],tai_yin:[600,365],shao_yin:[600,460],jue_yin:[600,555],engine:[600,650]},
+  funnel:{tai_yang:[600,80],shao_yang:[600,175],yang_ming:[600,270],tai_yin:[600,365],shao_yin:[600,460],jue_yin:[600,555],engine:[600,650]},
+  taiji:{tai_yang:[355,235],shao_yang:[355,400],yang_ming:[355,565],tai_yin:[845,235],shao_yin:[845,400],jue_yin:[845,565],engine:[600,400]},
+  phases:{tai_yang:[600,150],shao_yang:[250,400],yang_ming:[600,650],tai_yin:[950,400],shao_yin:[820,250],jue_yin:[380,250],engine:[600,400]}
+};
+const VORDER=['structure','steamer','funnel','taiji','phases'];
+let currentView='structure', pinned=null;
+const svg=document.getElementById('scheme');
+const hlPair=document.getElementById('hlPair');
+const hlLabel=document.getElementById('hlLabel');
+function edgePt(c,t,hw,hh,gap){
+  const dx=t[0]-c[0], dy=t[1]-c[1], L=Math.hypot(dx,dy)||1;
+  let k=Math.min(hw/(Math.abs(dx)||1e-9), hh/(Math.abs(dy)||1e-9));
+  k += (gap||0)/L;
+  return [c[0]+dx*k, c[1]+dy*k];
+}
+function info(id){
+  if(VIEWINFO[currentView] && VIEWINFO[currentView][id]) return VIEWINFO[currentView][id];
+  if(PHASES[id]) return PHASES[id];
+  if(id==='cycle') return CYCLEINFO;
+  return STRUCT[id];
+}
+function render(d){
+  if(typeof d==='string') d=info(d)||VINFO[d]; if(!d) return;
+  let h='<span class="htag" style="background:'+d.bg+';color:'+d.tc+'">'+d.tag+'</span>';
+  h+='<h2 style="color:'+d.tc+'">'+d.title+'</h2><p class="sub">'+d.sub+'</p>';
+  d.rows.forEach(r=>h+='<div class="row '+(r[2]||'')+'"><div class="k">'+r[0]+'</div><div class="v">'+r[1]+'</div></div>');
+  if(d.note)h+='<div class="note">'+d.note+'</div>';
+  document.getElementById('info').innerHTML=h;
+}
+function clearHL(){ hlPair.style.opacity=0; hlLabel.style.opacity=0; svg.classList.remove('dim','show-src','show-cyc'); document.querySelectorAll('.node').forEach(n=>n.classList.remove('hl','sel')); }
+function showHL(id){
+  render(id);
+  document.querySelectorAll('.node').forEach(n=>n.classList.toggle('sel',n.getAttribute('data-id')===id));
+  const P=VIEWS[currentView];
+  if(currentView==='taiji'){
+    if(id==='jue_yin'||id==='tai_yang'){
+      svg.classList.add('show-cyc','dim');
+      document.querySelectorAll('.node').forEach(n=>{const i=n.getAttribute('data-id');n.classList.toggle('hl', i==='jue_yin'||i==='tai_yang');});
+    }
+    return;
+  }
+  if(id==='engine'){
+    if(currentView==='structure'){
+      const E=P.engine;
+      document.getElementById('src1').setAttribute('d','M'+edgePt(E,P.shao_yin,168,40,4).join(',')+' L'+edgePt(P.shao_yin,E,150,65,9).join(','));
+      document.getElementById('src2').setAttribute('d','M'+edgePt(E,P.shao_yang,168,40,4).join(',')+' L'+edgePt(P.shao_yang,E,150,65,9).join(','));
+      svg.classList.add('show-src');
+    }
+    return;
+  }
+  if(currentView!=='structure') return;
+  const p=PAIR[id];
+  if(!p||!P[id]||!P[p]) return;
+  const a=P[id],b=P[p];
+  const p1=edgePt(a,b,150,65,9), p2=edgePt(b,a,150,65,9);
+  hlPair.setAttribute('d','M'+p1[0]+','+p1[1]+' L'+p2[0]+','+p2[1]); hlPair.style.opacity=1;
+  hlLabel.setAttribute('x',(p1[0]+p2[0])/2); hlLabel.setAttribute('y',(p1[1]+p2[1])/2-7);
+  hlLabel.textContent=PAIRLABEL[id]||''; hlLabel.style.opacity=1;
+  svg.classList.add('dim');
+  document.querySelectorAll('.node').forEach(n=>{const i=n.getAttribute('data-id');n.classList.toggle('hl',i===id||i===p);});
+}
+function nodeEnter(id){ if(pinned) return; clearHL(); showHL(id); }
+function nodeLeave(){ if(pinned) return; clearHL(); render(VINFO[currentView]); }
+function nodeTap(id){ if(pinned===id){ pinned=null; clearHL(); render(VINFO[currentView]); return;} pinned=id; clearHL(); showHL(id); }
+function clearPin(){ if(!pinned) return; pinned=null; clearHL(); render(VINFO[currentView]); }
+function showInfo(id){ render(id); }
+function layoutPhases(){
+  const P={fire:[600,196],earth:[778,350],metal:[702,560],water:[498,560],wood:[422,350]};
+  const hw=80,hh=30,gap=8;
+  const sheng=[['wood','fire'],['fire','earth'],['earth','metal'],['metal','water'],['water','wood']];
+  const ke=[['wood','earth'],['earth','water'],['water','fire'],['fire','metal'],['metal','wood']];
+  function set(id,a,b){const p1=edgePt(P[a],P[b],hw,hh,gap),p2=edgePt(P[b],P[a],hw,hh,gap);const l=document.getElementById(id);l.setAttribute('x1',p1[0]);l.setAttribute('y1',p1[1]);l.setAttribute('x2',p2[0]);l.setAttribute('y2',p2[1]);}
+  sheng.forEach((e,i)=>set('sh'+i,e[0],e[1]));
+  ke.forEach((e,i)=>set('ke'+i,e[0],e[1]));
+}
+function applyView(name){
+  currentView=name; pinned=null;
+  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('on',VORDER[i]===name));
+  VORDER.forEach(v=>svg.classList.toggle('view-'+v,v===name));
+  svg.classList.toggle('caps',name!=='structure');
+  const P=VIEWS[name];
+  document.querySelectorAll('.node').forEach(n=>{const id=n.getAttribute('data-id');const p=P[id];if(p)n.style.transform='translate('+p[0]+'px,'+p[1]+'px)';});
+  clearHL();
+  document.getElementById('vhint').textContent=VINFO[name].title+' — '+VINFO[name].sub;
+  render(VINFO[name]);
+  try{history.replaceState(null,'','#'+name);}catch(e){}
+}
+function toggleTheme(){ document.body.classList.toggle('light'); try{localStorage.setItem('scm-theme',document.body.classList.contains('light')?'light':'dark');}catch(e){} }
+(function init(){
+  try{ if(localStorage.getItem('scm-theme')==='light') document.body.classList.add('light'); }catch(e){}
+  layoutPhases();
+  document.querySelectorAll('.node').forEach(n=>{
+    n.setAttribute('tabindex','0'); n.setAttribute('role','button');
+    n.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); nodeTap(n.getAttribute('data-id')); } });
+  });
+  svg.addEventListener('click',e=>{ if(!e.target.closest('.node') && !e.target.closest('.hit') && !e.target.closest('.phcard')) clearPin(); });
+  const h=(location.hash||'').replace('#',''); applyView(VIEWS[h]?h:'structure');
+})();
+</script>
+</body>
+</html>

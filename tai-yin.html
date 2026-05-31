@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tài yīn — Greater Yin · deep dive</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="favicon.svg">
+<style>
+  :root{
+    --bg:#0a0d13; --panel:#11161f; --panel2:#171d2a; --line:#252d3d; --line2:#313b50;
+    --ink:#edece6; --ink2:#9aa6ba; --ink3:#697384;
+    --yin:#5f93cf; --lung:#7fb0e6; --lung-bd:rgba(127,176,230,.5);
+    --spleen:#e0ac52; --spleen-bd:rgba(224,172,82,.5);
+    --damp:#4f86c6; --nutr:#4eb784; --qi:#3bbdb2; --wei:#bf8ae6; --engine:#ef6f40; --chan:#4fb0a8;
+    --heart:#e0594b; --kidney:#4f86c6; --liver:#4eb784; --yangming:#d8a64e;
+  }
+  body.light{
+    --bg:#eef1f6; --panel:#fff; --panel2:#f1f4f9; --line:#d7dde7; --line2:#c4ccdb;
+    --ink:#1a2130; --ink2:#4d566b; --ink3:#7b8498;
+    --yin:#2f63a0; --lung:#2f63a0; --lung-bd:rgba(47,99,160,.5);
+    --spleen:#a9741d; --spleen-bd:rgba(169,116,29,.5);
+    --damp:#2f63a0; --nutr:#2f8f5e; --qi:#1f8f86; --wei:#7b46b0; --engine:#cf5a23; --chan:#1f8f86;
+    --heart:#c33c2f; --kidney:#2f63a0; --liver:#2f8f5e; --yangming:#a9741d;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1100px 640px at 50% -8%,#141d2e 0%,var(--bg) 58%);
+    color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased}
+  body.light{background:radial-gradient(1100px 640px at 50% -8%,#fff 0%,var(--bg) 60%)}
+  .wrap{max-width:1500px;margin:0 auto;padding:18px 20px 30px}
+  .topbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+  .back{border:1px solid var(--line);background:var(--panel);color:var(--ink2);text-decoration:none;
+    padding:7px 12px;border-radius:9px;font-size:12.5px;transition:.16s;white-space:nowrap}
+  .back:hover{border-color:var(--line2);color:var(--ink)}
+  .brand{font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink2);font-weight:600}
+  .brand b{color:var(--yin);font-weight:700}.brand span{color:var(--ink3)}
+  .views{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin-left:auto}
+  .tab{border:1px solid var(--line);background:var(--panel);color:var(--ink2);padding:7px 13px;border-radius:9px;font-size:12.5px;cursor:pointer;transition:.16s;user-select:none;white-space:nowrap}
+  .tab:hover{border-color:var(--line2);color:var(--ink)} .tab.on{background:var(--ink);color:var(--bg);font-weight:600;border-color:var(--ink)}
+  .tbtn{border:1px solid var(--line);background:var(--panel);color:var(--ink2);width:33px;height:33px;border-radius:9px;cursor:pointer;font-size:14px;transition:.16s}
+  .tbtn:hover{color:var(--ink);border-color:var(--line2)}
+  .vhint{color:var(--ink3);font-size:12px;margin:0 0 4px;min-height:16px}
+  .stage{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;align-items:stretch}
+  .svgbox{flex:1 1 700px;min-width:320px;background:linear-gradient(180deg,#121824,#0e131c);border:1px solid var(--line);border-radius:18px;padding:8px 12px}
+  body.light .svgbox{background:linear-gradient(180deg,#fff,#f3f6fb)}
+  svg#scheme{width:100%;height:auto;display:block}
+  aside{flex:1 1 350px;min-width:300px;max-width:440px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px 17px}
+  #info .htag{display:inline-block;font-size:10.5px;letter-spacing:.7px;text-transform:uppercase;padding:3px 9px;border-radius:6px;font-weight:600;margin-bottom:10px}
+  #info h2{margin:0 0 2px;font-size:19px}#info .sub{color:var(--ink2);font-size:13px;margin:0 0 12px}
+  #info .row{display:flex;gap:11px;padding:8px 10px;border-radius:9px;font-size:13px;margin-bottom:3px}
+  #info .row .k{color:var(--ink3);flex:0 0 78px;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;padding-top:2px;font-weight:600}
+  #info .row .v{color:var(--ink);flex:1}
+  #info .row.a{background:rgba(127,176,230,.10)} #info .row.a .k{color:var(--lung)}
+  #info .row.b{background:rgba(224,172,82,.12)} #info .row.b .k{color:var(--spleen)}
+  #info .note{margin-top:12px;padding:10px 13px;background:var(--panel2);border-radius:11px;font-size:12.5px;color:var(--ink2)}
+  .legendbar{display:flex;flex-wrap:wrap;gap:7px 18px;align-items:center;margin-top:14px;font-size:11px;color:var(--ink3)}
+  .legendbar i{display:inline-block;width:16px;border-top-width:3px;border-top-style:solid;margin-right:6px;vertical-align:3px}
+  .hit{cursor:pointer} .hit:focus{outline:none} .hit:focus-visible .nb{stroke:var(--ink);stroke-width:2.4}
+  .nb{transition:.16s} .hit:hover .nb{filter:brightness(1.22)} .hit.sel .nb{stroke-width:2.4}
+  .vlayer{opacity:0;transition:opacity .4s;pointer-events:none}
+  #scheme.l-metab .v-metab{opacity:1}
+  #scheme.l-yingwei .v-yingwei{opacity:1}
+  #scheme.l-lungfn .v-lungfn{opacity:1} #scheme.l-lungfn .v-lungfn .hit{pointer-events:auto}
+  #scheme.l-spleenfn .v-spleenfn{opacity:1} #scheme.l-spleenfn .v-spleenfn .hit{pointer-events:auto}
+  #scheme.l-rel .v-rel{opacity:1} #scheme.l-rel .v-rel .hit{pointer-events:auto}
+  #scheme.l-clinical .v-clinical{opacity:1} #scheme.l-clinical .v-clinical .hit{pointer-events:auto}
+  #scheme.focus .flowG{opacity:.18}
+  #scheme.cover .heroOrg,#scheme.cover .flowG,#scheme.cover .torso{opacity:0}
+  #coverBg{opacity:0;transition:opacity .3s;pointer-events:none}
+  #scheme.cover #coverBg{opacity:.97;pointer-events:auto}
+  @media (prefers-reduced-motion: reduce){ .vlayer,.nb,.tab,.tbtn{transition:none !important} }
+  @media print{ :root{--bg:#fff;--panel:#fff;--ink:#111;--ink2:#444;--ink3:#666;--line:#ccc;--line2:#bbb}
+    body{background:#fff} .views,.tbtn{display:none} .svgbox{background:#fff !important;border:1px solid #ddd} .stage{display:block} aside{max-width:none;margin-top:14px} }
+  @media (max-width:560px){ .brand{font-size:11px} .tab{padding:6px 9px;font-size:11.5px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <a class="back" href="./" aria-label="Back to atlas">← Atlas</a>
+    <div class="brand"><b>Tài yīn</b> <span>· greater yin · Lung + Spleen</span></div>
+    <div class="views">
+      <div class="tab on" onclick="applyLens('overview')">Overview</div>
+      <div class="tab" onclick="applyLens('metab')">Metabolism</div>
+      <div class="tab" onclick="applyLens('yingwei')">Ying–Wèi</div>
+      <div class="tab" onclick="applyLens('lung')">Lung</div>
+      <div class="tab" onclick="applyLens('spleen')">Spleen</div>
+      <div class="tab" onclick="applyLens('rel')">Relations</div>
+      <div class="tab" onclick="applyLens('clinical')">Clinical</div>
+      <button class="tbtn" onclick="toggleTheme()" aria-label="Toggle light or dark theme" title="Light / dark">◐</button>
+    </div>
+  </div>
+  <p class="vhint" id="vhint"></p>
+
+  <div class="stage">
+    <div class="svgbox">
+      <svg id="scheme" class="l-overview" viewBox="0 0 1200 780" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Tai yin deep dive: the Lung and Spleen engine" xmlns="http://www.w3.org/2000/svg">
+        <desc>The Tai yin system — Lung and Spleen — shown as a central engine with inputs of qi and dampness and outputs of nutrition, plus lenses for its functions, nutritive-protective split, relationships and clinical use.</desc>
+        <defs>
+          <marker id="aD" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="var(--damp)"/></marker>
+          <marker id="aN" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="var(--nutr)"/></marker>
+          <marker id="aQ" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="var(--qi)"/></marker>
+          <marker id="aW" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="var(--wei)"/></marker>
+          <marker id="aL" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#8b97ab"/></marker>
+          <linearGradient id="lungGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(127,176,230,.20)"/><stop offset="100%" stop-color="rgba(127,176,230,.06)"/></linearGradient>
+          <linearGradient id="spleenGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(224,172,82,.20)"/><stop offset="100%" stop-color="rgba(224,172,82,.06)"/></linearGradient>
+        </defs>
+
+        <!-- torso silhouette -->
+        <path d="M300,150 C450,86 750,86 900,150 C918,310 916,560 882,724 L318,724 C284,560 282,310 300,150 Z" fill="none" stroke="var(--line2)" stroke-width="1" opacity=".4"/>
+
+        <!-- ===== FLOWS (Fig 5.1) ===== -->
+        <g class="flowG">
+          <path class="hit" d="M726,74 C690,96 666,116 652,140" fill="none" stroke="var(--qi)" stroke-width="2.2" marker-end="url(#aQ)" onmouseenter="showInfo('in_qi')" onclick="showInfo('in_qi')"/>
+          <text x="736" y="66" fill="var(--qi)" font-size="11.5" font-weight="600">Qi from environment</text>
+          <path class="hit" d="M430,92 C480,118 514,128 548,146" fill="none" stroke="var(--damp)" stroke-width="2.2" marker-end="url(#aD)" onmouseenter="showInfo('in_damp_ext')" onclick="showInfo('in_damp_ext')"/>
+          <text x="300" y="78" fill="var(--damp)" font-size="11.5" font-weight="600">External dampness</text>
+          <path class="hit" d="M928,548 C820,512 720,470 686,446" fill="none" stroke="var(--spleen)" stroke-width="2.2" marker-end="url(#aN)" onmouseenter="showInfo('in_food')" onclick="showInfo('in_food')"/>
+          <text x="936" y="566" text-anchor="end" fill="var(--spleen)" font-size="11.5" font-weight="600">Raw food · yáng míng stomach</text>
+          <path class="hit" d="M686,420 C800,404 900,402 958,400" fill="none" stroke="var(--nutr)" stroke-width="2.6" marker-end="url(#aN)" onmouseenter="showInfo('out_nutr')" onclick="showInfo('out_nutr')"/>
+          <text x="828" y="388" text-anchor="middle" fill="var(--nutr)" font-size="11.5" font-weight="600">Nutrition · nutritive-protective →</text>
+          <g class="hit" onmouseenter="showInfo('in_damp_int')" onclick="showInfo('in_damp_int')">
+            <path d="M548,712 C560,640 575,520 588,470" fill="none" stroke="var(--damp)" stroke-width="1.8" stroke-dasharray="5 5" marker-end="url(#aD)" opacity=".8"/>
+            <path d="M628,712 C620,640 612,520 606,470" fill="none" stroke="var(--damp)" stroke-width="1.8" stroke-dasharray="5 5" marker-end="url(#aD)" opacity=".8"/>
+            <text x="588" y="734" text-anchor="middle" fill="var(--damp)" font-size="11.5" font-weight="600">Internal dampness ↑</text>
+          </g>
+          <!-- lung-spleen synergy loop -->
+          <path d="M566,300 C548,330 548,362 566,392" fill="none" stroke="var(--ink2)" stroke-width="1.8" marker-end="url(#aL)" opacity=".7"/>
+          <path d="M634,392 C652,362 652,330 634,300" fill="none" stroke="var(--ink2)" stroke-width="1.8" marker-end="url(#aL)" opacity=".7"/>
+          <text x="600" y="350" text-anchor="middle" fill="var(--ink3)" font-size="10">lung ⇅ spleen</text>
+        </g>
+
+        <!-- ===== HERO ORGANS ===== -->
+        <g class="heroOrg">
+          <path d="M600,118 V152 M600,152 C588,162 576,168 566,172 M600,152 C612,162 624,168 634,172" fill="none" stroke="var(--lung)" stroke-width="1.6" opacity=".7"/>
+          <g class="hit" onmouseenter="showInfo('org_lung')" onclick="showInfo('org_lung')">
+            <ellipse class="nb" cx="548" cy="212" rx="50" ry="76" fill="url(#lungGrad)" stroke="var(--lung-bd)" stroke-width="1.5"/>
+            <ellipse class="nb" cx="652" cy="212" rx="50" ry="76" fill="url(#lungGrad)" stroke="var(--lung-bd)" stroke-width="1.5"/>
+            <text x="600" y="200" text-anchor="middle" fill="var(--lung)" font-size="17" font-weight="700">LUNG</text>
+            <text x="600" y="220" text-anchor="middle" fill="var(--ink3)" font-size="10.5">arm · metal</text>
+          </g>
+          <g class="hit" onmouseenter="showInfo('org_spleen')" onclick="showInfo('org_spleen')">
+            <ellipse class="nb" cx="600" cy="432" rx="86" ry="42" fill="url(#spleenGrad)" stroke="var(--spleen-bd)" stroke-width="1.5"/>
+            <text x="600" y="427" text-anchor="middle" fill="var(--spleen)" font-size="16" font-weight="700">SPLEEN</text>
+            <text x="600" y="446" text-anchor="middle" fill="var(--ink3)" font-size="10.5">leg · earth</text>
+          </g>
+        </g>
+
+        <!-- ===== METABOLISM lens ===== -->
+        <g class="vlayer v-metab" pointer-events="none">
+          <rect x="190" y="392" width="200" height="26" rx="13" fill="#121a26" stroke="var(--damp)"/>
+          <text x="290" y="409" text-anchor="middle" fill="var(--damp)" font-size="12" font-weight="600">① regulate dampness</text>
+          <rect x="812" y="372" width="200" height="26" rx="13" fill="#121a26" stroke="var(--nutr)"/>
+          <text x="912" y="389" text-anchor="middle" fill="var(--nutr)" font-size="12" font-weight="600">② distribute nutrition</text>
+          <text x="600" y="690" text-anchor="middle" fill="var(--ink2)" font-size="11.5">Two metabolisms, one fluid medium — nutrition rides the fluids the spleen and lung govern</text>
+        </g>
+
+        <!-- backdrop for cover lenses (Ying-Wèi, Clinical) -->
+        <rect id="coverBg" x="16" y="16" width="1168" height="748" rx="16" fill="var(--panel)" stroke="var(--line)" stroke-width="1"/>
+
+        <!-- ===== YING-WEI lens ===== -->
+        <g class="vlayer v-yingwei">
+          <line x1="300" y1="150" x2="900" y2="150" stroke="var(--ink2)" stroke-width="1.5" opacity=".6"/>
+          <text x="306" y="142" fill="var(--ink3)" font-size="11" letter-spacing="1">SKIN / SURFACE</text>
+          <rect x="360" y="430" width="480" height="34" rx="17" fill="rgba(78,183,132,.12)" stroke="var(--nutr)" stroke-width="1.4"/>
+          <text x="600" y="452" text-anchor="middle" fill="var(--nutr)" font-size="12.5" font-weight="600">VESSEL · nutritive (yíng) → steady, even pace →</text>
+          <g stroke="var(--wei)" stroke-width="2" fill="none" marker-end="url(#aW)" opacity=".9">
+            <path d="M430,430 C420,330 420,240 430,166"/><path d="M560,430 C552,330 552,240 560,166"/><path d="M690,430 C700,330 700,240 690,166"/><path d="M810,430 C820,330 820,240 810,166"/>
+          </g>
+          <rect class="hit" x="470" y="186" width="280" height="26" rx="13" fill="#121a26" stroke="var(--wei)" onmouseenter="showInfo('wei')" onclick="showInfo('wei')"/>
+          <text x="610" y="203" text-anchor="middle" fill="var(--wei)" font-size="12" font-weight="600" pointer-events="none">protective (wèi) · fierce, to where needed</text>
+          <rect class="hit" x="470" y="488" width="280" height="26" rx="13" fill="#121a26" stroke="var(--nutr)" onmouseenter="showInfo('ying')" onclick="showInfo('ying')"/>
+          <text x="610" y="505" text-anchor="middle" fill="var(--nutr)" font-size="12" font-weight="600" pointer-events="none">nutritive (yíng) · inside the vessels</text>
+          <text x="600" y="560" text-anchor="middle" fill="var(--ink2)" font-size="11.5">One source (food essence + air qi); clear → nutritive, turbid → protective</text>
+        </g>
+
+        <!-- ===== LUNG functions lens ===== -->
+        <g class="vlayer v-lungfn">
+          <g stroke="var(--lung)" stroke-width="1.3" opacity=".4">
+            <line x1="600" y1="212" x2="250" y2="150"/><line x1="600" y1="212" x2="250" y2="265"/><line x1="600" y1="212" x2="950" y2="150"/><line x1="600" y1="212" x2="950" y2="265"/>
+          </g>
+          <g class="hit" transform="translate(250,150)" onmouseenter="showInfo('lf_resp')" onclick="showInfo('lf_resp')"><rect class="nb" x="-96" y="-24" width="192" height="48" rx="12" fill="url(#lungGrad)" stroke="var(--lung-bd)" stroke-width="1.3"/><text x="0" y="5" text-anchor="middle" fill="var(--lung)" font-size="13" font-weight="600">Respiration · rules vessels</text></g>
+          <g class="hit" transform="translate(250,265)" onmouseenter="showInfo('lf_skin')" onclick="showInfo('lf_skin')"><rect class="nb" x="-96" y="-24" width="192" height="48" rx="12" fill="url(#lungGrad)" stroke="var(--lung-bd)" stroke-width="1.3"/><text x="0" y="5" text-anchor="middle" fill="var(--lung)" font-size="13" font-weight="600">Skin &amp; body hair</text></g>
+          <g class="hit" transform="translate(950,150)" onmouseenter="showInfo('lf_pm')" onclick="showInfo('lf_pm')"><rect class="nb" x="-96" y="-24" width="192" height="48" rx="12" fill="url(#lungGrad)" stroke="var(--lung-bd)" stroke-width="1.3"/><text x="0" y="5" text-anchor="middle" fill="var(--lung)" font-size="13" font-weight="600">Prime minister → Heart</text></g>
+          <g class="hit" transform="translate(950,265)" onmouseenter="showInfo('lf_po')" onclick="showInfo('lf_po')"><rect class="nb" x="-96" y="-24" width="192" height="48" rx="12" fill="url(#lungGrad)" stroke="var(--lung-bd)" stroke-width="1.3"/><text x="0" y="5" text-anchor="middle" fill="var(--lung)" font-size="13" font-weight="600">Corporeal soul · pò</text></g>
+        </g>
+
+        <!-- ===== SPLEEN functions lens ===== -->
+        <g class="vlayer v-spleenfn">
+          <g stroke="var(--spleen)" stroke-width="1.3" opacity=".4">
+            <line x1="600" y1="432" x2="250" y2="400"/><line x1="600" y1="432" x2="250" y2="515"/><line x1="600" y1="432" x2="950" y2="400"/><line x1="600" y1="432" x2="950" y2="515"/>
+          </g>
+          <g class="hit" transform="translate(250,400)" onmouseenter="showInfo('sf_blood')" onclick="showInfo('sf_blood')"><rect class="nb" x="-96" y="-24" width="192" height="48" rx="12" fill="url(#spleenGrad)" stroke="var(--spleen-bd)" stroke-width="1.3"/><text x="0" y="5" text-anchor="middle" fill="var(--spleen)" font-size="13" font-weight="600">Governs blood</text></g>
+          <g class="hit" transform="translate(250,515)" onmouseenter="showInfo('sf_qi')" onclick="showInfo('sf_qi')"><rect class="nb" x="-96" y="-24" width="192" height="48" rx="12" fill="url(#spleenGrad)" stroke="var(--spleen-bd)" stroke-width="1.3"/><text x="0" y="5" text-anchor="middle" fill="var(--spleen)" font-size="13" font-weight="600">Moves qi · transforms damp</text></g>
+          <g class="hit" transform="translate(950,400)" onmouseenter="showInfo('sf_muscle')" onclick="showInfo('sf_muscle')"><rect class="nb" x="-96" y="-24" width="192" height="48" rx="12" fill="url(#spleenGrad)" stroke="var(--spleen-bd)" stroke-width="1.3"/><text x="0" y="5" text-anchor="middle" fill="var(--spleen)" font-size="13" font-weight="600">Muscles &amp; four limbs</text></g>
+          <g class="hit" transform="translate(950,515)" onmouseenter="showInfo('sf_yi')" onclick="showInfo('sf_yi')"><rect class="nb" x="-96" y="-24" width="192" height="48" rx="12" fill="url(#spleenGrad)" stroke="var(--spleen-bd)" stroke-width="1.3"/><text x="0" y="5" text-anchor="middle" fill="var(--spleen)" font-size="13" font-weight="600">Stores intent · yì</text></g>
+        </g>
+
+        <!-- ===== RELATIONS lens ===== -->
+        <g class="vlayer v-rel">
+          <g stroke="#8b97ab" stroke-width="1.3" opacity=".45">
+            <line x1="600" y1="432" x2="600" y2="650"/><line x1="640" y1="212" x2="900" y2="128"/><line x1="560" y1="212" x2="300" y2="128"/><line x1="540" y1="450" x2="300" y2="640"/><line x1="660" y1="450" x2="900" y2="640"/>
+          </g>
+          <g class="hit" transform="translate(600,656)" onmouseenter="showInfo('rel_yangming')" onclick="showInfo('rel_yangming')"><rect class="nb" x="-120" y="-24" width="240" height="48" rx="12" fill="rgba(216,166,78,.12)" stroke="var(--yangming)" stroke-width="1.3"/><text x="0" y="5" text-anchor="middle" fill="var(--yangming)" font-size="12.5" font-weight="600">Yáng míng — pair (damp ⇄ dry)</text></g>
+          <g class="hit" transform="translate(905,118)" onmouseenter="showInfo('rel_heart')" onclick="showInfo('rel_heart')"><rect class="nb" x="-104" y="-22" width="208" height="44" rx="12" fill="rgba(224,89,75,.12)" stroke="var(--heart)" stroke-width="1.3"/><text x="0" y="4" text-anchor="middle" fill="var(--heart)" font-size="12" font-weight="600">Heart — qi activates blood</text></g>
+          <g class="hit" transform="translate(295,118)" onmouseenter="showInfo('rel_phase')" onclick="showInfo('rel_phase')"><rect class="nb" x="-100" y="-22" width="200" height="44" rx="12" fill="rgba(78,183,132,.12)" stroke="var(--liver)" stroke-width="1.3"/><text x="0" y="4" text-anchor="middle" fill="var(--liver)" font-size="12" font-weight="600">Earth → Metal (5 phases)</text></g>
+          <g class="hit" transform="translate(285,648)" onmouseenter="showInfo('rel_kidney')" onclick="showInfo('rel_kidney')"><rect class="nb" x="-104" y="-22" width="208" height="44" rx="12" fill="rgba(79,134,198,.12)" stroke="var(--kidney)" stroke-width="1.3"/><text x="0" y="4" text-anchor="middle" fill="var(--kidney)" font-size="12" font-weight="600">Kidney — pò ↔ essence</text></g>
+          <g class="hit" transform="translate(915,648)" onmouseenter="showInfo('rel_liver')" onclick="showInfo('rel_liver')"><rect class="nb" x="-104" y="-22" width="208" height="44" rx="12" fill="rgba(78,183,132,.12)" stroke="var(--liver)" stroke-width="1.3"/><text x="0" y="4" text-anchor="middle" fill="var(--liver)" font-size="12" font-weight="600">Liver — stores blood</text></g>
+        </g>
+
+        <!-- ===== CLINICAL lens ===== -->
+        <g class="vlayer v-clinical">
+          <g class="hit" transform="translate(600,170)" onmouseenter="showInfo('cp_source')" onclick="showInfo('cp_source')"><rect class="nb" x="-220" y="-34" width="440" height="68" rx="14" fill="rgba(79,176,168,.10)" stroke="var(--chan)" stroke-width="1.4"/><text x="0" y="-6" text-anchor="middle" fill="var(--chan)" font-size="14" font-weight="700">LU-9 + SP-3 · source points</text><text x="0" y="16" text-anchor="middle" fill="var(--ink2)" font-size="12">tonify tài yīn qi → transform dampness</text></g>
+          <g class="hit" transform="translate(600,300)" onmouseenter="showInfo('cp_uniting')" onclick="showInfo('cp_uniting')"><rect class="nb" x="-220" y="-34" width="440" height="68" rx="14" fill="rgba(79,176,168,.10)" stroke="var(--chan)" stroke-width="1.4"/><text x="0" y="-6" text-anchor="middle" fill="var(--chan)" font-size="14" font-weight="700">LU-5 + SP-9 · uniting points</text><text x="0" y="16" text-anchor="middle" fill="var(--ink2)" font-size="12">regulate qi dynamic → reverse counterflow</text></g>
+          <g class="hit" transform="translate(600,440)" onmouseenter="showInfo('cp_treats')" onclick="showInfo('cp_treats')"><rect class="nb" x="-260" y="-36" width="520" height="72" rx="14" fill="#121a26" stroke="var(--line2)" stroke-width="1.2"/><text x="0" y="-8" text-anchor="middle" fill="var(--ink)" font-size="13" font-weight="600">Treats via tài yīn</text><text x="0" y="14" text-anchor="middle" fill="var(--ink2)" font-size="11.5">skin · damp · cough/asthma · edema · daytime urinary · bleeding</text></g>
+          <text x="600" y="540" text-anchor="middle" fill="var(--ink3)" font-size="12">principle: “choose yin to treat yang” (yáng bìng qǔ yīn) · regulate before tonify</text>
+        </g>
+      </svg>
+    </div>
+
+    <aside><div class="card" id="info"></div></aside>
+  </div>
+
+  <div class="legendbar">
+    <span><i style="border-top-color:var(--qi)"></i>Qi in</span>
+    <span><i style="border-top-color:var(--damp)"></i>Dampness</span>
+    <span><i style="border-top-color:var(--nutr)"></i>Nutrition / nutritive</span>
+    <span><i style="border-top-color:var(--wei)"></i>Protective (wèi)</span>
+    <span><i style="border-top-color:var(--lung)"></i>Lung</span>
+    <span><i style="border-top-color:var(--spleen)"></i>Spleen</span>
+    <span class="attrib">After Wang Ju-Yi &amp; Robertson, “Applied Channel Theory,” ch. 5 (figs 5.1, 5.5, 5.8)</span>
+  </div>
+</div>
+
+<script>
+const INFO = {
+  identity:{tag:"Tài yīn · greater yin",tc:"var(--yin)",bg:"rgba(95,147,207,.16)",title:"The Tài yīn system",sub:"Lung (arm) + Spleen (leg) — one channel, two parts",
+    rows:[["Position","The most external of the three yin levels — where function first takes physical form"],["Movement","kāi (opens) — but to the internal environment; postnatal qi percolates out to nourish the body"],["Six Qi","Dampness — balanced by the dryness of its pair Yáng míng"],["Nature","Yin organs are 'replete with essence but not full of raw substance'"],["Steamer","The steam off the boiling water — a nourishing 'bath' surrounding every cell"]],
+    note:"Two jobs, one fluid medium: regulate dampness + distribute nutrition. The lung drives, the spleen transforms. Most direct outside-contact of the three yin (lung↔air/skin, spleen↔food)."},
+  org_lung:{tag:"Organ · metal",tc:"var(--lung)",bg:"rgba(127,176,230,.16)",title:"Lung — the prime minister",sub:"hangs at T3 · commands the qi (zhǔ qì)",
+    rows:[["Role","Prime minister to the heart-emperor; its true qi (zhēn qì) activates heart blood"],["Drives","All movement of qi begins with the rhythm of the breath","a"],["Balances","Diffuses up-out to the skin (xuān fā) ⇅ clarifies-descends (sù jiàng)","a"],["Source","The ultimate source of qi within the fluids; rules the hundred vessels"]],
+    note:"Open the Lung tab for its four functions. Lung qi lets kidney essence actualize — 'a seed needs sunshine.'"},
+  org_spleen:{tag:"Organ · earth",tc:"var(--spleen)",bg:"rgba(224,172,82,.16)",title:"Spleen — the granary",sub:"center of the five organs (~T11, GV-6)",
+    rows:[["Classic","'The spleen-stomach holds the office of the granaries and issues the five flavors' — nutrition derives from here"],["Transforms","Food fermented by the stomach → nutrition carried into the blood (huà yùn)","b"],["Governs","Nutritive core of blood; gathers it back at microcirculation (tǒng)","b"],["Likes","Dryness — 'dislikes dampness'; yet needs healthy fluids (spleen yin)"]],
+    note:"Uniquely described together with the Stomach in the Inner Classic. Open the Spleen tab for its four functions."},
+  in_qi:{tag:"Input · flow",tc:"var(--qi)",bg:"rgba(59,189,178,.16)",title:"Qi from the environment",sub:"taken in by the Lung",
+    rows:[["What","The 'true qi' (zhēn qì) of the air, separated clear-from-turbid on inhalation"],["Becomes","The driving force that distributes the spleen's nutrition to the whole body"],["Output","Combines with food essence → nutritive + true qi traveling in the fluids"]],
+    note:"Lung qi is the engine's spark; spleen substance is its fuel."},
+  in_damp_ext:{tag:"Input · pathology",tc:"var(--damp)",bg:"rgba(79,134,198,.16)",title:"External dampness",sub:"the climate Tài yīn must metabolise",
+    rows:[["Risk","Damp that the tài yīn system cannot process accumulates as pathology"],["Pattern","Excess damp → signs of spleen-qi deficiency (fatigue, low appetite, edema): excess presenting as deficiency"],["Note","Dampness ≠ healthy fluids — and one never becomes the other"]],
+    note:"Yáng míng dryness is the counter-balance to this dampness."},
+  in_food:{tag:"Input · from yáng míng",tc:"var(--spleen)",bg:"rgba(224,172,82,.16)",title:"Raw food & grains",sub:"transported in through the Yáng míng stomach",
+    rows:[["Path","Food/raw fluids come inward through yáng míng; nutrition opens outward from tài yīn"],["Meeting","This is where the internal (yin) meets the external (yang)"],["Then","Stomach ferments with dry warmth → spleen transforms into nutrition"]],
+    note:"Tài yīn (most external yin) and Yáng míng (most internal yang) are the seam of in/out."},
+  out_nutr:{tag:"Output · flow",tc:"var(--nutr)",bg:"rgba(78,183,132,.16)",title:"Nutrition outward",sub:"nutritive-protective (yíng-wèi)",
+    rows:[["What","Refined fluids + nutritive blood open outward to the internal environment"],["Reaches","A 'cellular bath' around every cell, maintained by the nutritive aspect of blood"],["Split","See the Ying–Wèi tab: nutritive inside vessels, protective outside to the surface"]],
+    note:"The steam of nutrition that infuses the organs — the signature of tài yīn."},
+  in_damp_int:{tag:"Pathology · internal",tc:"var(--damp)",bg:"rgba(79,134,198,.16)",title:"Internal dampness",sub:"fluids that lost their nutritive quality",
+    rows:[["Cause","When cellular fluids lack nutritive quality, dampness results and develops pathology"],["From","Spleen failing water metabolism, or lung failing to move qi, or both"],["Becomes","Long-standing damp → phlegm; palpable nodules appear along the channels"]],
+    note:"Spleen qi removes pathogenic damp; spleen yin supplies healthy fluids — different jobs."},
+  ying:{tag:"Ying–Wèi · nutritive",tc:"var(--nutr)",bg:"rgba(78,183,132,.16)",title:"Nutritive (yíng)",sub:"inside the vessels — the economy",
+    rows:[["Moves","Constant, even, rhythmic pace to all parts of the body, within the vessels"],["From","The nutritive core of blood arising from the spleen"],["Clear","The 'clear' of food becomes nutritive (gentle, rhythmic)"]],
+    note:"Like a nation's economy: continuous, open transport to every corner."},
+  wei:{tag:"Ying–Wèi · protective",tc:"var(--wei)",bg:"rgba(191,138,230,.16)",title:"Protective (wèi)",sub:"outside the vessels — the defense",
+    rows:[["Moves","Quickly, 'fiercely', to where it is needed at the superficial levels"],["From","Depends on the stimulus of lung qi; nourished by the nutritive aspect"],["Turbid","The 'turbid' of food becomes protective (chaotic, active)"]],
+    note:"Like a rescue unit / national defense — fierce, mobile, but always tied to the nutritive supply. Disharmony of yíng-wèi = a tài yīn condition; guì zhī tāng (bái sháo + guì zhī) harmonises it."},
+  lf_resp:{tag:"Lung · function 1",tc:"var(--lung)",bg:"rgba(127,176,230,.16)",title:"Respiration · rules the hundred vessels",sub:"breath in the broadest sense",
+    rows:[["Broad","Not just breathing — the infusion of qi everywhere vessels are found"],["Exchange","Separates clear from turbid qi (inhale true qi, exhale turbid) — also at the cellular level","a"],["Dynamic","xuān fā (diffuse up/out) ⇅ sù jiàng (clarify/descend, aids inhalation & the large intestine)","a"]],
+    note:"Four herbal/needle strategies: diffuse · descend · moisten · contract — pick by how the qi dynamic is disturbed."},
+  lf_skin:{tag:"Lung · function 2",tc:"var(--lung)",bg:"rgba(127,176,230,.16)",title:"Skin & body hair",sub:"the 'breathing' of the skin",
+    rows:[["Depends on","Proper outward diffusion of lung qi to the surface"],["Reads as","Skin elasticity reflects the 'ampleness' of the lung"],["Deficient","Weak lung qi → dry, dull skin tone"]],
+    note:"With the spleen's cellular bath, this is why chronic skin disease is often a tài yīn case."},
+  lf_pm:{tag:"Lung · function 3",tc:"var(--lung)",bg:"rgba(127,176,230,.16)",title:"Acts as prime minister",sub:"to the heart-emperor",
+    rows:[["With heart","Heart moves the blood (xíng), lung initiates the movement of qi (zhǔ qì)"],["Together","In the upper burner they set the metabolic pace of all the organs"],["Rhythm","The pace of the breath guides the beating of the heart"]],
+    note:"Rhythm is the keyword of tài yīn — breath, heartbeat, digestion, even thought."},
+  lf_po:{tag:"Lung · function 4",tc:"var(--lung)",bg:"rgba(127,176,230,.16)",title:"Holds the corporeal soul (pò)",sub:"physical endurance · 'can finish what's begun'",
+    rows:[["Nature","A yin-natured 'soul' that radiates outward with lung qi; sensed, not seen"],["Roots in","Matches the kidney essence — lung qi lets essence actualise as a strong body"],["Emotion","Sorrow / grief (bēi) — it dispels qi; backs up the upper burner → heat in the middle"]],
+    note:"'Corporeal-soul strength' = stamina to stick with hard work. Sorrow weakens it; weak lungs invite sorrow."},
+  sf_blood:{tag:"Spleen · function 1",tc:"var(--spleen)",bg:"rgba(224,172,82,.16)",title:"Governs blood (tǒng)",sub:"gathers / unifies — not large-vessel holding",
+    rows:[["Provides","The nutritive aspect of blood (the medium of nutritive qi)"],["Reuptake","Gathers blood back at microcirculation — where capillaries meet interstitial fluid","b"],["Vs liver","Liver stores blood in the deep vessels (cáng); spleen works at the outermost internal level","b"],["Clinic","Easy bruising, chronic skin (eczema/psoriasis), gynecological bleeding"]],
+    note:"If the cellular fluids lose nutritive quality → dampness. The spleen maintains the 'most external level of the internal environment.'"},
+  sf_qi:{tag:"Spleen · function 2",tc:"var(--spleen)",bg:"rgba(224,172,82,.16)",title:"Moves qi · transforms dampness",sub:"and warms the five organs",
+    rows:[["Moves qi","Postnatal qi's liveliness depends on the nourishment the spleen transforms"],["Spleen qi","Acrid-drying (bái zhú, cāng zhú) removes pathogenic damp","b"],["Spleen yin","Moistening (shān yào, shēng dì, yì yǐ rén) supplies healthy fluids","b"],["Warms","Nourishing the organs releases warmth (like cellular respiration)"]],
+    note:"Dampness is removed, not converted — there is no path turning pathogenic damp into good fluid."},
+  sf_muscle:{tag:"Spleen · function 3",tc:"var(--spleen)",bg:"rgba(224,172,82,.16)",title:"Responsible for muscles & four limbs",sub:"nourishment-dependent",
+    rows:[["Depends on","The spleen's qi-moving transformation of grains and water"],["Two causes","Weakness from deficiency, OR from dampness blocking the channels — not always 'tonify'"],["Palpate","Soft muscle = spleen-qi deficiency; tenderness/nodules = damp accumulation"]],
+    note:"Clear before you strengthen when damp sits in the channels; long damp → phlegm → palpable nodules."},
+  sf_yi:{tag:"Spleen · function 4",tc:"var(--spleen)",bg:"rgba(224,172,82,.16)",title:"Stores intent (yì)",sub:"rhythm and composure of thought",
+    rows:[["Intent","The slow, methodical forming of random ideas into organized thought"],["Like digestion","Both need an even pace and composure (jié lǜ)"],["Imbalance","Over-concentration → obsession; lack → scattered thought; over-thinking (sī) injures the spleen"]],
+    note:"Intent = a prenatal capacity; thought/pensiveness = a postnatal activity that can wear the capacity down."},
+  rel_yangming:{tag:"Relationship · pair",tc:"var(--yangming)",bg:"rgba(216,166,78,.16)",title:"Tài yīn ↔ Yáng míng",sub:"interior-exterior · damp ⇄ dry",
+    rows:[["Balance","Tài yīn dampness is balanced by yáng míng dryness — the digestive set-point"],["Flow","Nutrition opens outward from tài yīn; food/raw fluids come inward via yáng míng"],["Seam","Most external yin meets most internal yang — where in/out actually touch"]],
+    note:"On the body, the stomach channel runs the yin abdomen next to the spleen channel — unusually close for a yang channel."},
+  rel_heart:{tag:"Relationship",tc:"var(--heart)",bg:"rgba(224,89,75,.16)",title:"Lung ↔ Heart",sub:"qi activates blood",
+    rows:[["Link","Lung true-qi activates the potential in heart blood; together the source of qi+blood movement"],["Roles","Lung commands qi (zhǔ qì), heart moves blood (xíng xuè)"],["Rhythm","Breath sets the pace the heartbeat follows"]],
+    note:"Prime minister (lung) shapes the emperor's (heart) commands into policy."},
+  rel_kidney:{tag:"Relationship",tc:"var(--kidney)",bg:"rgba(79,134,198,.16)",title:"Lung ↔ Kidney",sub:"corporeal soul ↔ essence",
+    rows:[["Link","The corporeal soul (pò, lung) matches kidney essence as it 'goes in and out'"],["Mechanism","Prenatal essence needs lung qi to actualise — 'a seed needs sunshine'"],["Clinic","Strong lungs let kidney essence manifest as an enduring, strong body"]],
+    note:"Essence is the root of strength; lung qi lets it take root as material strength."},
+  rel_liver:{tag:"Relationship · blood",tc:"var(--liver)",bg:"rgba(78,183,132,.16)",title:"Spleen ↔ Liver (and Heart) on blood",sub:"three different verbs",
+    rows:[["Heart","Moves blood (xíng) — sends it through the body"],["Liver","Stores blood (cáng) — holds it at the deepest level / large vessels"],["Spleen","Governs/gathers (tǒng) — at microcirculation, the outermost internal level","b"]],
+    note:"Distinguishing these three is key in bleeding disorders and skin disease."},
+  rel_phase:{tag:"Relationship · 5 phases",tc:"var(--liver)",bg:"rgba(78,183,132,.16)",title:"Earth → Metal",sub:"Spleen generates Lung",
+    rows:[["Generating","Spleen (earth) is the mother of Lung (metal) — nutrition feeds the qi of breath"],["Within tài yīn","This is why the two organs work in such tight synergy"],["Note","The spleen's nourishment makes the lung's diffusion possible"]],
+    note:"Earth at the center feeds metal — the postnatal source supporting respiration."},
+  cp_source:{tag:"Clinical · tonify",tc:"var(--chan)",bg:"rgba(79,176,168,.14)",title:"LU-9 + SP-3 (source points)",sub:"benefit / tonify tài yīn qi",
+    rows:[["Use","Draw source qi into the channel — strengthen spleen qi to transform dampness"],["When","Clear tài yīn qi deficiency (e.g. fatigue, spotting, daytime urinary incontinence)"],["Herb echo","Parallels bái zhú / cāng zhú (strengthen-and-dry)"]],
+    note:"Case: postpartum incontinence resolved with gentle LU-9 + SP-3 after strong kidney-focused treatment had failed."},
+  cp_uniting:{tag:"Clinical · regulate",tc:"var(--chan)",bg:"rgba(79,176,168,.14)",title:"LU-5 + SP-9 (uniting/sea points)",sub:"regulate the qi dynamic · reverse counterflow",
+    rows:[["Use","Two sea points reverse counterflow → re-establish healthy fluid metabolism"],["When","Damp / qi-counterflow patterns: chronic skin, cough, asthma, edema"],["Herb echo","Parallels fú líng / zhū líng (regulate the dynamic)"]],
+    note:"Regulate first, tonify later — 'untie the knot' by clearing the qi dynamic before exposing the core."},
+  cp_treats:{tag:"Clinical · scope",tc:"var(--ink)",bg:"var(--panel2)",title:"What tài yīn treats",sub:"far beyond 'spleen & lung'",
+    rows:[["Range","Chronic skin, dampness, cough/asthma, edema, daytime urinary problems, certain bleeding"],["Principle","'Choose yin to treat yang' (yáng bìng qǔ yīn) — treat a yáng míng surface disease via tài yīn"],["Why","The lung governs the qi of the whole body, so tài yīn regulates qi transformation broadly"]],
+    note:"Many modern, functional (qi-transformation) disorders respond well — regulate the dynamic, let right qi recover."}
+};
+const VLENS = {
+  overview:{layers:[],info:'identity',hint:'The Lung–Spleen engine — qi and food in, nutrition out, dampness regulated.'},
+  metab:{layers:['metab'],info:'out_nutr',hint:'Two metabolisms: regulate dampness + distribute nutrition, through one fluid medium.'},
+  yingwei:{layers:['yingwei'],cover:1,info:'wei',hint:'Nutritive inside the vessels (steady) · protective outside to the surface (fierce).'},
+  lung:{layers:['lungfn'],focus:1,info:'org_lung',hint:'Lung — prime minister: respiration, skin, pacing the heart, the corporeal soul.'},
+  spleen:{layers:['spleenfn'],focus:1,info:'org_spleen',hint:'Spleen — the granary: governs blood, moves qi & transforms damp, muscles, intent.'},
+  rel:{layers:['rel'],focus:1,info:'rel_yangming',hint:'How tài yīn connects outward: Yáng míng, Heart, Kidney, Liver, and the five phases.'},
+  clinical:{layers:['clinical'],cover:1,info:'cp_source',hint:'Point pairs and the qi-transformation logic of treating with tài yīn.'}
+};
+const ALLLAYERS=['metab','yingwei','lungfn','spleenfn','rel','clinical'];
+const svg=document.getElementById('scheme');
+let pinned=null;
+function render(d){
+  if(typeof d==='string') d=INFO[d]; if(!d) return;
+  let h='<span class="htag" style="background:'+d.bg+';color:'+d.tc+'">'+d.tag+'</span>';
+  h+='<h2 style="color:'+d.tc+'">'+d.title+'</h2><p class="sub">'+d.sub+'</p>';
+  d.rows.forEach(r=>h+='<div class="row '+(r[2]||'')+'"><div class="k">'+r[0]+'</div><div class="v">'+r[1]+'</div></div>');
+  if(d.note)h+='<div class="note">'+d.note+'</div>';
+  document.getElementById('info').innerHTML=h;
+}
+function showInfo(id){ render(id); pinned=id; document.querySelectorAll('.hit').forEach(n=>n.classList.toggle('sel', n.getAttribute('data-id')===id || (n.getAttribute('onclick')||'').indexOf("'"+id+"'")>-1)); }
+let curLens='overview';
+function applyLens(name){
+  curLens=name; pinned=null;
+  const order=['overview','metab','yingwei','lung','spleen','rel','clinical'];
+  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('on',order[i]===name));
+  const V=VLENS[name];
+  ALLLAYERS.forEach(l=>svg.classList.toggle('l-'+l, V.layers.indexOf(l)>-1));
+  svg.classList.toggle('focus', !!V.focus);
+  svg.classList.toggle('cover', !!V.cover);
+  document.getElementById('vhint').textContent=V.hint;
+  render(V.info);
+  document.querySelectorAll('.hit').forEach(n=>n.classList.remove('sel'));
+  try{history.replaceState(null,'','#'+name);}catch(e){}
+}
+function toggleTheme(){ document.body.classList.toggle('light'); try{localStorage.setItem('scm-theme',document.body.classList.contains('light')?'light':'dark');}catch(e){} }
+(function init(){
+  try{ if(localStorage.getItem('scm-theme')==='light') document.body.classList.add('light'); }catch(e){}
+  document.querySelectorAll('.hit').forEach(n=>{ n.setAttribute('tabindex','0'); n.setAttribute('role','button');
+    n.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); n.dispatchEvent(new Event('click')); } }); });
+  const h=(location.hash||'').replace('#',''); applyLens(VLENS[h]?h:'overview');
+})();
+</script>
+</body>
+</html>
